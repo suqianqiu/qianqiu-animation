@@ -1,0 +1,112 @@
+千秋动画1.2.0增量验证，2026-10-22（Asia/Shanghai）
+
+变更：
+- APK及应用可见名称改为千秋动画；versionCode4/versionName1.2.0；包名及签名不变。
+- 默认进入热门；热门/全部动漫/历史三个Tab，保留A–Z及首字母检索。
+- 热门90个目录匹配条目，豆瓣评分降序，显示实际作品/季名和2026-10-22快照日期。
+- 来源为豆瓣公开JSON响应，原件verification/douban/；非实时热度榜、非全量排名。
+- 按钮：焦点亮黄#FFE082加白边；按下#FFC83D；激活标签紫色#6352C7；默认深色#2D344C。
+- 列表焦点为紫底黄边；播放器按钮、选集/解码弹窗也采用统一焦点样式。
+- 历史记录最近20部（另有体积上限），剧集和进度独立保存；自动迁移旧版最后一条记录。
+
+验证通过：
+- WatchHistoryTest：最新在前、20部上限、去重、保留分集及进度、存储上限。
+- PopularDataTest：90个唯一目录映射，具体作品名称和分数逐项匹配豆瓣原始响应、降序及日期。
+- 原有首字母及来源/链接有效性逻辑保留。
+- JDK21构建成功；D8改为输入应用classes.jar，解决Windows命令行长度限制；清理目录限定在项目build/classes。
+- APK v1/v2/v3签名校验通过，API21/armeabi-v7a。
+- 电视覆盖升级至1.2.0，标题千秋动画，默认热门90条，显示评分和日期。
+- 遥控器上键移动焦点至Tab，电视截图中焦点区域亮黄像素(255,224,130)29194个；与紫色激活标签、深色未选按钮明显区分。
+- 旧观看历史和04:14进度迁移保留；新观看后历史显示两部及各自进度。
+- 热门→搜索→排球少年第二季→线路1第01集，实际画面输出，日志video-output ready。
+- 从历史续播后显示00:34/24:36，独立进度保持。
+- 全部动漫仍显示428项；M筛选24/428。
+- 最终停在热门首页，未保留后台视频播放。
+
+界面证据：build/qiankiu-hot.png、qiankiu-focus.png、qiankiu-history.png、qiankiu-history-two.png、qiankiu-player.png、qiankiu-resume.xml、qiankiu-letter.xml、qiankiu-ready.png。
+限制：评分为采集日快照；同系列显示最高分具体条目，点击后检索对应系列的源站资源；未验证全部热门剧集播放可用性。
+
+1.1.1电视最终验证补充：
+- 覆盖升级成功，versionCode3/versionName1.1.1。
+- 首页显示428/428，状态提示已隐藏3个全来源无结果的名称。
+- 输入gzljssxdh匹配钢之炼金术师兄弟会；联网查询命中“钢之炼金术师FA”，1项结果。
+- 点击继续观看保留原历史，媒体Range预检后成功原生播放；日志video-output ready，画面见build/health-player.png。
+- 最终返回完整428项目录首页，无后台视频播放。
+- 新界面证据：build/health-home.png、health-alias.png、health-ready.xml。
+
+看动漫1.1.1增量验证，2026-10-22（Asia/Shanghai）
+
+电脑版批量HTTP检查：431个名称，三个来源，共4182条HTTP检查记录（含重试、别名和请求头复查）。
+- 428个名称至少有一处搜索结果、详情分集和抽查播放页返回200；3个名称全来源无搜索结果，已从默认目录隐藏。
+- 隐藏：新神榜杨戬、蓝猫淘气三千问、舒克和贝塔。
+- 16个名称修正来源搜索词，避免将标点、译名等差异当作失效。
+- 411个名称至少有一个可提取的媒体清单/视频入口返回200/206；只读取小段数据，不等于视频全片成功播放。
+- 本次确认404/410地址为0，没有伪造删除正常地址。
+- 401/403、超时和非预期响应保留为未确认，不按404删除。
+- 稀饭动漫大部分媒体入口仍无法确认可访问；默认优先MX动漫。
+
+新增运行时处理：
+- 详情/播放页、媒体入口遇到连续两次404/410后记录失效，过滤搜索结果或分集列表。
+- 404后恢复200不删除；403/5xx/超时不永久过滤；重定向到404时同时过滤原始链接。
+- 媒体入口按真实UA/Referer使用Range bytes=0-0小范围GET预检；暂时失败仍由播放器继续尝试。
+- 过滤快照与运行时记录保留7天；搜索词别名继续保留。
+
+测试：LinkHealthTest、AuditCatalogTest（7项）、SourcesTest、TlsTest通过；原目录首字母测试仍通过。
+APK：版本1.1.1 / versionCode3，原包名和签名，Android5/API21/ARMv7。
+详细报告：verification/catalog-audit/summary.json、results.json、requests.json。
+限制：仅抽查候选结果、线路和首集；没有逐集、全部HLS分片或完整播放验证。
+
+看动漫 1.1.0 增量验证，2026-10-22（Asia/Shanghai）
+
+- 内置431个常见动漫名称；名称/别名/各字拼音首字母离线索引。
+- AnimeCatalogTest通过：431条唯一名称、全部名称首字母可检索、纯中文名称逐字首字母长度检查、A–Z/#筛选、大小写/空格/全角字母、别名和缩写歧义。
+- 电视升级安装到原包，保留播放记录；Android5/API21/ARMv7。
+- 电视M字母筛选24条；mztkn实时筛选名侦探柯南1条。
+- mztkn按搜索后以完整中文名查询MX动漫，获得12项结果。
+- 从结果返回后恢复mztkn和1/431筛选状态。
+- 遥控器方向键进入字母栏，确定F筛选并保留按钮焦点。
+- 字母按钮改为白字，已选字母使用黄色并加标记，改善电视对比度。
+- APK的v1/v2/v3签名通过；minSdk21、armeabi-v7a。
+- 本次未修改播放器/来源解析/TLS；此前播放验证记录保留如下。
+- 目录是搜索入口，未逐一验证431个名称的可播放性。
+- 新功能证据：build/catalog-home.png、catalog-letter-m.png、catalog-initials.png、catalog-online-search.png、catalog-back.xml、catalog-dpad.xml。
+
+看动漫 1.0.0 验证记录，2026-10-22（Asia/Shanghai）
+
+目标：Whaley WTV55K1J，Android 5.0.2 / API21，32位应用运行环境。
+独立包名 com.qianq.kandongman，versionCode 1，versionName 1.0.0。
+
+电脑端通过
+- 原生Java解析真实HTML：MXdm 12项搜索结果/3条线路；akianime 10项/3条；xfdmneo 4项/1条。
+- 三种样本播放页提取到媒体URL；拒绝非HTTP和嵌入用户名密码的地址。
+- HTTP/ffprobe/实际3帧解码：MXdm HLS样本通过，H.264/AAC，1280x1024。
+- 另两条样本：Aki CDN连接超时，稀饭样本HTTP401；没有将其标记为可播放。
+- 六张公开CA根证书与默认系统信任合并；不受信任的自签名证书仍被拒绝。
+- 搜索站与MXdm视频CDN均可仅使用附带公开CA包进行正常TLS验证。
+- APK的v1/v2/v3签名通过，minSdk21，armeabi-v7a。
+
+电视端通过
+- 独立安装、启动，中文首页与遥控器列表焦点。
+- 原生HTTPS搜索：MX动漫“名侦探柯南”返回12项结果。
+- 获取详情线路：3条，分别1277、1276、1277项分集。
+- 线路1第01集：完整解析、HLS连接、实际动漫画面输出。
+- 播放日志含 KanDongman start mode=0 software=false 和 video-output ready。
+- OMX.MS.AVC.Decoder日志佐证硬件解码路径；画面记录在build/final-player.png。
+- 遥控器左右快进/控制栏显示：记录00:48 / 25:27。
+- 返回并点击“继续观看”后恢复，记录01:04 / 25:27。
+- 最后返回看动漫首页，未保持后台播放。
+
+实际兼容修复
+- Android5系统根证书过旧：Java请求和VLC播放器分别补充所需公开CA。
+- 应用自有TLS目录供VLC读取；HTTPS主机名和证书验证保持启用。
+- 不修改系统根证书，不接受源站任意自签名证书。
+
+限制
+- 实际播放只验证了MX动漫的一条H.264/AAC线路；不是全部剧集或来源可用性保证。
+- 当前版本的显式软解选择、WebView动态解析、长时间稳定性和音画同步质量未单独完成电视测量。
+- 电视WebView仍是旧版本；复杂JavaScript页面可能超时，可返回换源。
+- 搜索、分集和实际播放地址可用性由上游站点及网络决定。
+
+桌面单元测试：tests/SourcesTest.java、tests/TlsTest.java。
+逐地址网络结果：verification/network/results.json。
+界面证据：build/main.png、search2.png、roads2.png、final-player.png、progress.xml、resume.xml、ready.png。

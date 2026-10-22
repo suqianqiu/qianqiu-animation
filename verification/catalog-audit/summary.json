@@ -1,0 +1,79 @@
+{
+  "checked": 431,
+  "counts": {
+    "page_ok": 428,
+    "no_results": 3
+  },
+  "confirmed_404_410_urls": 0,
+  "hidden_titles": [
+    "新神榜杨戬",
+    "蓝猫淘气三千问",
+    "舒克和贝塔"
+  ],
+  "rescued_aliases": [
+    "钢之炼金术师兄弟会",
+    "86不存在的战区",
+    "薇薇萤石眼之歌",
+    "Re从零开始的异世界生活",
+    "恶役千金等级99",
+    "Fate命运之夜",
+    "Fate冠位指定绝对魔兽战线巴比伦尼亚",
+    "Fate Zero",
+    "我的心里危险的东西",
+    "在下坂本有何贵干",
+    "干物妹小埋",
+    "精灵宝可梦地平线",
+    "白蛇缘起",
+    "白蛇浮生",
+    "白蛇2青蛇劫起",
+    "新神榜哪吒重生"
+  ],
+  "corrected_search_names": 16,
+  "http_statuses": {
+    "200": 3559,
+    "206": 552,
+    "401": 29,
+    "None": 8,
+    "403": 34
+  },
+  "checked_at": "2026-10-21T17:43:49.423934+00:00",
+  "sources": {
+    "MXdm": {
+      "name_checks": {
+        "page_ok": 409,
+        "no_results": 22
+      },
+      "sample_media_checks": {
+        "http_ok": 384,
+        "unknown": 24,
+        "not_extracted": 22,
+        "unknown_host_repeated_failures": 1
+      }
+    },
+    "akianime": {
+      "name_checks": {
+        "page_ok": 291,
+        "no_results": 128,
+        "unknown": 12
+      },
+      "sample_media_checks": {
+        "http_ok": 234,
+        "not_extracted": 196,
+        "unexpected_content": 1
+      }
+    },
+    "xfdmneo": {
+      "name_checks": {
+        "page_ok": 262,
+        "no_results": 169
+      },
+      "sample_media_checks": {
+        "unknown": 23,
+        "unknown_host_repeated_failures": 237,
+        "not_extracted": 169,
+        "http_ok": 2
+      }
+    }
+  },
+  "http_check_records": 4182
+}

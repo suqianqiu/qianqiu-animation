@@ -1,0 +1,14 @@
+build/
+dist/
+deps/
+*.jks
+*.keystore
+*.p12
+*.pfx
+.env*
+__pycache__/
+*.pyc
+*.log
+
+# Do not publish screenshots of personal viewing history.
+docs/screenshots/*history*.png

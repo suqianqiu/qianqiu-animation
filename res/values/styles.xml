@@ -1,0 +1,8 @@
+<resources>
+    <style name="AppTheme" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:colorAccent">#FFE082</item>
+        <item name="android:colorControlActivated">#FFE082</item>
+        <item name="android:colorControlHighlight">#80FFE082</item>
+        <item name="android:colorButtonNormal">#2D344C</item>
+    </style>
+</resources>

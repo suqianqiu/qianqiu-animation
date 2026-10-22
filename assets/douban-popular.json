@@ -1,0 +1,642 @@
+{
+  "fetched_at": "2026-10-21T17:56:13.195393+00:00",
+  "date": "2026-10-22",
+  "method": "豆瓣公开动画高分结果中与本地目录匹配的作品；评分降序，同系列取最高分条目并显示具体作品/季名。非实时热度、非全量豆瓣排名。",
+  "sources": [
+    "https://movie.douban.com/j/search_subjects?type=tv&tag=%E6%97%A5%E6%9C%AC%E5%8A%A8%E7%94%BB&sort=rank&page_limit=100&page_start=0",
+    "https://movie.douban.com/j/search_subjects?type=tv&tag=%E5%8A%A8%E7%94%BB&sort=rank&page_limit=100&page_start=0",
+    "https://movie.douban.com/j/chart/top_list?type=25&interval_id=100:90&action=&start=0&limit=100"
+  ],
+  "items": [
+    {
+      "title": "排球少年 第二季",
+      "catalogTitle": "排球少年",
+      "rating": 9.7,
+      "url": "https://movie.douban.com/subject/26285156/",
+      "votes": 0
+    },
+    {
+      "title": "银魂 第二季",
+      "catalogTitle": "银魂",
+      "rating": 9.7,
+      "url": "https://movie.douban.com/subject/4888015/",
+      "votes": 0
+    },
+    {
+      "title": "哆啦A梦",
+      "catalogTitle": "哆啦A梦",
+      "rating": 9.6,
+      "url": "https://movie.douban.com/subject/1782004/",
+      "votes": 0
+    },
+    {
+      "title": "夏目友人帐 第三季",
+      "catalogTitle": "夏目友人帐",
+      "rating": 9.6,
+      "url": "https://movie.douban.com/subject/5967223/",
+      "votes": 0
+    },
+    {
+      "title": "强风吹拂",
+      "catalogTitle": "强风吹拂",
+      "rating": 9.6,
+      "url": "https://movie.douban.com/subject/30238385/",
+      "votes": 0
+    },
+    {
+      "title": "攻壳机动队 第二季",
+      "catalogTitle": "攻壳机动队",
+      "rating": 9.6,
+      "url": "https://movie.douban.com/subject/1460947/",
+      "votes": 0
+    },
+    {
+      "title": "星际牛仔",
+      "catalogTitle": "星际牛仔",
+      "rating": 9.6,
+      "url": "https://movie.douban.com/subject/1424406/",
+      "votes": 0
+    },
+    {
+      "title": "龙珠Z",
+      "catalogTitle": "龙珠",
+      "rating": 9.6,
+      "url": "https://movie.douban.com/subject/4006490/",
+      "votes": 0
+    },
+    {
+      "title": "进击的巨人 最终季 完结篇 前篇",
+      "catalogTitle": "进击的巨人",
+      "rating": 9.5,
+      "url": "https://movie.douban.com/subject/35853587/",
+      "votes": 114415
+    },
+    {
+      "title": "3月的狮子 第二季",
+      "catalogTitle": "三月的狮子",
+      "rating": 9.5,
+      "url": "https://movie.douban.com/subject/26999593/",
+      "votes": 0
+    },
+    {
+      "title": "乒乓",
+      "catalogTitle": "乒乓",
+      "rating": 9.5,
+      "url": "https://movie.douban.com/subject/25813424/",
+      "votes": 0
+    },
+    {
+      "title": "全职猎人",
+      "catalogTitle": "全职猎人",
+      "rating": 9.5,
+      "url": "https://movie.douban.com/subject/1460919/",
+      "votes": 0
+    },
+    {
+      "title": "团子大家族 第二季",
+      "catalogTitle": "Clannad",
+      "rating": 9.5,
+      "url": "https://movie.douban.com/subject/3230813/",
+      "votes": 0
+    },
+    {
+      "title": "摇曳露营△ 第二季",
+      "catalogTitle": "摇曳露营",
+      "rating": 9.5,
+      "url": "https://movie.douban.com/subject/30358098/",
+      "votes": 0
+    },
+    {
+      "title": "擅长捉弄的高木同学 第三季",
+      "catalogTitle": "擅长捉弄的高木同学",
+      "rating": 9.5,
+      "url": "https://movie.douban.com/subject/35587922/",
+      "votes": 0
+    },
+    {
+      "title": "数码宝贝",
+      "catalogTitle": "数码宝贝",
+      "rating": 9.5,
+      "url": "https://movie.douban.com/subject/1970134/",
+      "votes": 0
+    },
+    {
+      "title": "机动战士高达0080 口袋里的战争",
+      "catalogTitle": "机动战士高达",
+      "rating": 9.5,
+      "url": "https://movie.douban.com/subject/1401542/",
+      "votes": 0
+    },
+    {
+      "title": "海贼王",
+      "catalogTitle": "航海王",
+      "rating": 9.5,
+      "url": "https://movie.douban.com/subject/1453238/",
+      "votes": 0
+    },
+    {
+      "title": "混沌武士",
+      "catalogTitle": "混沌武士",
+      "rating": 9.5,
+      "url": "https://movie.douban.com/subject/1460915/",
+      "votes": 0
+    },
+    {
+      "title": "灵能百分百 II",
+      "catalogTitle": "灵能百分百",
+      "rating": 9.5,
+      "url": "https://movie.douban.com/subject/27011763/",
+      "votes": 0
+    },
+    {
+      "title": "钢之炼金术师FA",
+      "catalogTitle": "钢之炼金术师兄弟会",
+      "rating": 9.5,
+      "url": "https://movie.douban.com/subject/3430169/",
+      "votes": 0
+    },
+    {
+      "title": "钻石王牌 第二季",
+      "catalogTitle": "钻石王牌",
+      "rating": 9.5,
+      "url": "https://movie.douban.com/subject/26335299/",
+      "votes": 0
+    },
+    {
+      "title": "千与千寻",
+      "catalogTitle": "千与千寻",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/1291561/",
+      "votes": 2577223
+    },
+    {
+      "title": "大闹天宫",
+      "catalogTitle": "大闹天宫",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/1418019/",
+      "votes": 519973
+    },
+    {
+      "title": "新世纪福音战士剧场版：Air/真心为你",
+      "catalogTitle": "新世纪福音战士",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/1308892/",
+      "votes": 105467
+    },
+    {
+      "title": "一拳超人",
+      "catalogTitle": "一拳超人",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/26339248/",
+      "votes": 0
+    },
+    {
+      "title": "元气少女缘结神 过去篇",
+      "catalogTitle": "元气少女缘结神",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/26372270/",
+      "votes": 0
+    },
+    {
+      "title": "奇巧计程车",
+      "catalogTitle": "奇巧计程车",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/35332568/",
+      "votes": 0
+    },
+    {
+      "title": "怪化猫",
+      "catalogTitle": "怪化猫",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/2340927/",
+      "votes": 0
+    },
+    {
+      "title": "悠哉日常大王 第二季",
+      "catalogTitle": "悠哉日常大王",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/25861694/",
+      "votes": 0
+    },
+    {
+      "title": "日常",
+      "catalogTitle": "日常",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/4848701/",
+      "votes": 0
+    },
+    {
+      "title": "棋魂",
+      "catalogTitle": "棋魂",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/1474243/",
+      "votes": 0
+    },
+    {
+      "title": "犬夜叉：完结篇",
+      "catalogTitle": "犬夜叉",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/3993290/",
+      "votes": 0
+    },
+    {
+      "title": "白箱",
+      "catalogTitle": "白箱",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/25955381/",
+      "votes": 0
+    },
+    {
+      "title": "葬送的芙莉莲",
+      "catalogTitle": "葬送的芙莉莲",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/36093351/",
+      "votes": 0
+    },
+    {
+      "title": "虫师",
+      "catalogTitle": "虫师",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/1800597/",
+      "votes": 0
+    },
+    {
+      "title": "轻音少女 第二季",
+      "catalogTitle": "轻音少女",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/4223466/",
+      "votes": 0
+    },
+    {
+      "title": "银之匙 第二季",
+      "catalogTitle": "银之匙",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/24851387/",
+      "votes": 0
+    },
+    {
+      "title": "食梦者 第三季",
+      "catalogTitle": "食梦者",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/7161694/",
+      "votes": 0
+    },
+    {
+      "title": "齐木楠雄的灾难",
+      "catalogTitle": "齐木楠雄的灾难",
+      "rating": 9.4,
+      "url": "https://movie.douban.com/subject/26801048/",
+      "votes": 0
+    },
+    {
+      "title": "冰海战记",
+      "catalogTitle": "海盗战记",
+      "rating": 9.3,
+      "url": "https://movie.douban.com/subject/30174419/",
+      "votes": 0
+    },
+    {
+      "title": "反叛的鲁路修R2",
+      "catalogTitle": "叛逆的鲁路修",
+      "rating": 9.3,
+      "url": "https://movie.douban.com/subject/3004532/",
+      "votes": 0
+    },
+    {
+      "title": "命运石之门",
+      "catalogTitle": "命运石之门",
+      "rating": 9.3,
+      "url": "https://movie.douban.com/subject/4925398/",
+      "votes": 0
+    },
+    {
+      "title": "四叠半神话大系",
+      "catalogTitle": "四叠半神话大系",
+      "rating": 9.3,
+      "url": "https://movie.douban.com/subject/4195678/",
+      "votes": 0
+    },
+    {
+      "title": "少女终末旅行",
+      "catalogTitle": "少女终末旅行",
+      "rating": 9.3,
+      "url": "https://movie.douban.com/subject/27081136/",
+      "votes": 0
+    },
+    {
+      "title": "月刊少女野崎君",
+      "catalogTitle": "月刊少女野崎君",
+      "rating": 9.3,
+      "url": "https://movie.douban.com/subject/25850705/",
+      "votes": 0
+    },
+    {
+      "title": "火影忍者 疾风传",
+      "catalogTitle": "火影忍者",
+      "rating": 9.3,
+      "url": "https://movie.douban.com/subject/2053598/",
+      "votes": 0
+    },
+    {
+      "title": "约定的梦幻岛",
+      "catalogTitle": "约定的梦幻岛",
+      "rating": 9.3,
+      "url": "https://movie.douban.com/subject/30206430/",
+      "votes": 0
+    },
+    {
+      "title": "蜂蜜与四叶草",
+      "catalogTitle": "蜂蜜与四叶草",
+      "rating": 9.3,
+      "url": "https://movie.douban.com/subject/1770547/",
+      "votes": 0
+    },
+    {
+      "title": "蜡笔小新",
+      "catalogTitle": "蜡笔小新",
+      "rating": 9.3,
+      "url": "https://movie.douban.com/subject/1431683/",
+      "votes": 0
+    },
+    {
+      "title": "跃动青春",
+      "catalogTitle": "跃动青春",
+      "rating": 9.3,
+      "url": "https://movie.douban.com/subject/35679677/",
+      "votes": 0
+    },
+    {
+      "title": "辉夜大小姐想让我告白：天才们的恋爱头脑战 第二季",
+      "catalogTitle": "辉夜大小姐想让我告白",
+      "rating": 9.3,
+      "url": "https://movie.douban.com/subject/33379634/",
+      "votes": 0
+    },
+    {
+      "title": "鬼灭之刃：游郭篇",
+      "catalogTitle": "鬼灭之刃",
+      "rating": 9.3,
+      "url": "https://movie.douban.com/subject/34813210/",
+      "votes": 0
+    },
+    {
+      "title": "龙猫",
+      "catalogTitle": "龙猫",
+      "rating": 9.2,
+      "url": "https://movie.douban.com/subject/1291560/",
+      "votes": 1431061
+    },
+    {
+      "title": "天空之城",
+      "catalogTitle": "天空之城",
+      "rating": 9.2,
+      "url": "https://movie.douban.com/subject/1291583/",
+      "votes": 1024713
+    },
+    {
+      "title": "天书奇谭",
+      "catalogTitle": "天书奇谭",
+      "rating": 9.2,
+      "url": "https://movie.douban.com/subject/1428581/",
+      "votes": 345722
+    },
+    {
+      "title": "哪吒闹海",
+      "catalogTitle": "哪吒闹海",
+      "rating": 9.2,
+      "url": "https://movie.douban.com/subject/1307315/",
+      "votes": 315679
+    },
+    {
+      "title": "狐妖小红娘剧场版：王权富贵",
+      "catalogTitle": "狐妖小红娘",
+      "rating": 9.2,
+      "url": "https://movie.douban.com/subject/26946612/",
+      "votes": 19842
+    },
+    {
+      "title": "名侦探柯南",
+      "catalogTitle": "名侦探柯南",
+      "rating": 9.2,
+      "url": "https://movie.douban.com/subject/1463371/",
+      "votes": 0
+    },
+    {
+      "title": "命运之夜前传 第二季",
+      "catalogTitle": "Fate Zero",
+      "rating": 9.2,
+      "url": "https://movie.douban.com/subject/6874729/",
+      "votes": 0
+    },
+    {
+      "title": "搞笑漫画日和",
+      "catalogTitle": "搞笑漫画日和",
+      "rating": 9.2,
+      "url": "https://movie.douban.com/subject/2249531/",
+      "votes": 0
+    },
+    {
+      "title": "樱桃小丸子",
+      "catalogTitle": "樱桃小丸子",
+      "rating": 9.2,
+      "url": "https://movie.douban.com/subject/1465037/",
+      "votes": 0
+    },
+    {
+      "title": "男子高中生的日常",
+      "catalogTitle": "男子高中生的日常",
+      "rating": 9.2,
+      "url": "https://movie.douban.com/subject/6894811/",
+      "votes": 0
+    },
+    {
+      "title": "精灵宝可梦",
+      "catalogTitle": "宝可梦",
+      "rating": 9.2,
+      "url": "https://movie.douban.com/subject/2015069/",
+      "votes": 0
+    },
+    {
+      "title": "迷宫饭",
+      "catalogTitle": "迷宫饭",
+      "rating": 9.2,
+      "url": "https://movie.douban.com/subject/35801594/",
+      "votes": 0
+    },
+    {
+      "title": "钢之炼金术师",
+      "catalogTitle": "钢之炼金术师",
+      "rating": 9.2,
+      "url": "https://movie.douban.com/subject/1433342/",
+      "votes": 0
+    },
+    {
+      "title": "魔卡少女樱",
+      "catalogTitle": "魔卡少女樱",
+      "rating": 9.2,
+      "url": "https://movie.douban.com/subject/1465035/",
+      "votes": 0
+    },
+    {
+      "title": "哈尔的移动城堡",
+      "catalogTitle": "哈尔的移动城堡",
+      "rating": 9.1,
+      "url": "https://movie.douban.com/subject/1308807/",
+      "votes": 1318577
+    },
+    {
+      "title": "未麻的部屋",
+      "catalogTitle": "未麻的部屋",
+      "rating": 9.1,
+      "url": "https://movie.douban.com/subject/1395091/",
+      "votes": 438006
+    },
+    {
+      "title": "凉宫春日的消失",
+      "catalogTitle": "凉宫春日的消失",
+      "rating": 9.1,
+      "url": "https://movie.douban.com/subject/4074292/",
+      "votes": 40945
+    },
+    {
+      "title": "红辣椒",
+      "catalogTitle": "红辣椒",
+      "rating": 9.0,
+      "url": "https://movie.douban.com/subject/1865703/",
+      "votes": 585956
+    },
+    {
+      "title": "东京教父",
+      "catalogTitle": "东京教父",
+      "rating": 9.0,
+      "url": "https://movie.douban.com/subject/1310177/",
+      "votes": 300554
+    },
+    {
+      "title": "熊出没之过年",
+      "catalogTitle": "熊出没",
+      "rating": 9.0,
+      "url": "https://movie.douban.com/subject/21359690/",
+      "votes": 87291
+    },
+    {
+      "title": "葫芦兄弟",
+      "catalogTitle": "葫芦兄弟",
+      "rating": 9.0,
+      "url": "https://movie.douban.com/subject/3062897/",
+      "votes": 85959
+    },
+    {
+      "title": "幽灵公主",
+      "catalogTitle": "幽灵公主",
+      "rating": 8.9,
+      "url": "https://movie.douban.com/subject/1297359/",
+      "votes": 683328
+    },
+    {
+      "title": "借东西的小人阿莉埃蒂",
+      "catalogTitle": "借东西的小人阿莉埃蒂",
+      "rating": 8.9,
+      "url": "https://movie.douban.com/subject/4202302/",
+      "votes": 640125
+    },
+    {
+      "title": "侧耳倾听",
+      "catalogTitle": "侧耳倾听",
+      "rating": 8.9,
+      "url": "https://movie.douban.com/subject/1297052/",
+      "votes": 529890
+    },
+    {
+      "title": "风之谷",
+      "catalogTitle": "风之谷",
+      "rating": 8.9,
+      "url": "https://movie.douban.com/subject/1291585/",
+      "votes": 400191
+    },
+    {
+      "title": "灌篮高手",
+      "catalogTitle": "灌篮高手",
+      "rating": 8.9,
+      "url": "https://movie.douban.com/subject/35315950/",
+      "votes": 332060
+    },
+    {
+      "title": "神兵小将",
+      "catalogTitle": "神兵小将",
+      "rating": 8.9,
+      "url": "https://movie.douban.com/subject/3012377/",
+      "votes": 43923
+    },
+    {
+      "title": "魔女宅急便",
+      "catalogTitle": "魔女宅急便",
+      "rating": 8.8,
+      "url": "https://movie.douban.com/subject/1307811/",
+      "votes": 536270
+    },
+    {
+      "title": "千年女优",
+      "catalogTitle": "千年女优",
+      "rating": 8.8,
+      "url": "https://movie.douban.com/subject/1307394/",
+      "votes": 326391
+    },
+    {
+      "title": "萤火虫之墓",
+      "catalogTitle": "萤火虫之墓",
+      "rating": 8.7,
+      "url": "https://movie.douban.com/subject/1293318/",
+      "votes": 440854
+    },
+    {
+      "title": "罗小黑战记2",
+      "catalogTitle": "罗小黑战记",
+      "rating": 8.7,
+      "url": "https://movie.douban.com/subject/36448279/",
+      "votes": 340682
+    },
+    {
+      "title": "崖上的波妞",
+      "catalogTitle": "悬崖上的金鱼姬",
+      "rating": 8.6,
+      "url": "https://movie.douban.com/subject/1959877/",
+      "votes": 588936
+    },
+    {
+      "title": "穿越时空的少女",
+      "catalogTitle": "穿越时空的少女",
+      "rating": 8.6,
+      "url": "https://movie.douban.com/subject/1937946/",
+      "votes": 434594
+    },
+    {
+      "title": "红猪",
+      "catalogTitle": "红猪",
+      "rating": 8.6,
+      "url": "https://movie.douban.com/subject/1291838/",
+      "votes": 299473
+    },
+    {
+      "title": "宝莲灯",
+      "catalogTitle": "宝莲灯",
+      "rating": 8.6,
+      "url": "https://movie.douban.com/subject/1299643/",
+      "votes": 241160
+    },
+    {
+      "title": "狼的孩子雨和雪",
+      "catalogTitle": "狼的孩子雨和雪",
+      "rating": 8.6,
+      "url": "https://movie.douban.com/subject/7064681/",
+      "votes": 146215
+    },
+    {
+      "title": "你的名字。",
+      "catalogTitle": "你的名字",
+      "rating": 8.5,
+      "url": "https://movie.douban.com/subject/26683290/",
+      "votes": 1624277
+    }
+  ]
+}

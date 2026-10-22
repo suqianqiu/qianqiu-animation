@@ -1,0 +1,22 @@
+[
+  {
+    "file": "jsoup-1.13.1.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/jsoup/jsoup/1.13.1/jsoup-1.13.1.jar",
+    "sha256": "e2b99c0d2fa39f69f27efb1c0016390713feb2f2e02d8ea7f1c36b780271598a"
+  },
+  {
+    "file": "libvlc-all-3.6.5-sources.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/videolan/android/libvlc-all/3.6.5/libvlc-all-3.6.5-sources.jar",
+    "sha256": "95bb03b150ca4cda5fb334b02df2e4f95c627940a1134f805161ab0146566a37"
+  },
+  {
+    "file": "libvlc-all-3.6.5.aar",
+    "url": "https://repo.maven.apache.org/maven2/org/videolan/android/libvlc-all/3.6.5/libvlc-all-3.6.5.aar",
+    "sha256": "6a15a1f7acd0738a31acce0c7e5eb6f5f340b62e6b64d8f83df547da56a44b47"
+  },
+  {
+    "file": "json-test-only.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar",
+    "sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
+  }
+]

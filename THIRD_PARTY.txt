@@ -1,0 +1,34 @@
+Application source: MIT (LICENSE.txt).
+
+VideoLAN LibVLC 3.6.5, LGPL 2.1.
+https://code.videolan.org/videolan/libvlcjni
+https://code.videolan.org/videolan/vlc
+https://repo.maven.apache.org/maven2/org/videolan/android/libvlc-all/3.6.5/
+Original AAR and Java source archive supplied in deps/; license in licenses/COPYING.LIB.
+Native libraries are packaged unchanged and loaded through JNI.
+LibVLC JNI revision 965e864; VLC revision 4cbf73c397.
+The library can be rebuilt/replaced independently using the matching source revisions.
+
+jsoup 1.13.1, MIT.
+https://github.com/jhy/jsoup/tree/jsoup-1.13.1
+https://repo.maven.apache.org/maven2/org/jsoup/jsoup/1.13.1/
+Original JAR in deps/; its MIT notice is copied to licenses/jsoup-MIT.txt.
+
+KazumiRules, MIT.
+https://github.com/Predidit/KazumiRules
+Rules downloaded 2026-10-22: MXdm 2.4, akianime 1.4, xfdmneo 1.1.
+Original rule files are retained in assets/. Notice: licenses/KazumiRules-MIT.txt.
+Search/chapter parsing and player code here are independently implemented in Java.
+Video content is not bundled; upstream sites determine source availability.
+
+Public CA certificates for Android 5 HTTPS compatibility, downloaded 2026-10-22:
+https://pki.goog/roots.pem
+https://letsencrypt.org/certs/isrgrootx1.pem
+Only GTS Root R1/R2/R3/R4, ISRG Root X1 and USERTrust RSA are bundled as trusted-roots.pem.
+Bundle SHA256: 0E99DB0DD2EAEBC57711CF214980196E1F1E2A569BFA4EA7BAE26A5FDC439DBF.
+Original downloads retained under verification/.
+Standard certificate-chain, validity and HTTPS hostname validation remain enabled.
+
+Desktop tests only: org.json:json:20240303 (public domain), not included in the APK.
+https://github.com/stleary/JSON-java/tree/20240303
+https://repo.maven.apache.org/maven2/org/json/json/20240303/

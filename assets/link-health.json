@@ -1,0 +1,78 @@
+{
+  "generated_at": "2026-10-21T17:43:49.423934+00:00",
+  "expires_at_ms": 1793209429423,
+  "scope": "Search/detail/sample episode + extracted media HTTP status; not full video playback",
+  "blocked_urls": [],
+  "hidden_titles": [
+    "新神榜杨戬",
+    "蓝猫淘气三千问",
+    "舒克和贝塔"
+  ],
+  "search_terms": {
+    "钢之炼金术师兄弟会": {
+      "MXdm": "钢之炼金术师FA",
+      "akianime": "钢之炼金术师FA"
+    },
+    "86不存在的战区": {
+      "MXdm": "86",
+      "akianime": "86",
+      "xfdmneo": "86"
+    },
+    "薇薇萤石眼之歌": {
+      "MXdm": "薇薇",
+      "akianime": "薇薇",
+      "xfdmneo": "薇薇"
+    },
+    "Re从零开始的异世界生活": {
+      "MXdm": "从零开始",
+      "akianime": "从零开始",
+      "xfdmneo": "从零开始"
+    },
+    "恶役千金等级99": {
+      "MXdm": "恶役千金",
+      "akianime": "恶役千金"
+    },
+    "Fate命运之夜": {
+      "MXdm": "命运之夜",
+      "akianime": "命运之夜"
+    },
+    "Fate冠位指定绝对魔兽战线巴比伦尼亚": {
+      "MXdm": "绝对魔兽战线",
+      "xfdmneo": "绝对魔兽战线"
+    },
+    "Fate Zero": {
+      "xfdmneo": "Fate/Zero"
+    },
+    "我的心里危险的东西": {
+      "MXdm": "我心里危险的东西",
+      "akianime": "我心里危险的东西",
+      "xfdmneo": "我心里危险的东西"
+    },
+    "在下坂本有何贵干": {
+      "MXdm": "坂本",
+      "akianime": "坂本",
+      "xfdmneo": "坂本"
+    },
+    "干物妹小埋": {
+      "MXdm": "干物妹",
+      "akianime": "干物妹",
+      "xfdmneo": "干物妹"
+    },
+    "精灵宝可梦地平线": {
+      "MXdm": "地平线",
+      "akianime": "地平线"
+    },
+    "白蛇缘起": {
+      "MXdm": "白蛇"
+    },
+    "白蛇浮生": {
+      "MXdm": "白蛇"
+    },
+    "白蛇2青蛇劫起": {
+      "MXdm": "青蛇劫起"
+    },
+    "新神榜哪吒重生": {
+      "MXdm": "哪吒重生"
+    }
+  }
+}
