@@ -136,3 +136,38 @@ PASS: episode row Right then Confirm opens download dialog instead of player
 
 
 目录464项；补充35项、合并2组重复译名。90/90海报资源存在。语言判断根据来源声明，未做音频识别。正气大侠仅补目录和别名，播放未验证成功。Android 5未复验本轮新增功能。
+
+
+2026-10-24 / 1.5.0 / AM9 PRO Android 14
+26项Android仪器测试；自生成18秒测试片与本地模拟网页，不涉及个人观看内容。
+PASS: master, relative URLs, AES key and fMP4 map rewritten
+PASS: live playlist rejected
+PASS: unsupported byte-range playlist rejected before caching
+PASS: ordinary online HLS plays with guarded address validation
+PASS: ordinary playback creates no disk task even with old autoDownload preference enabled
+PASS: ordinary playback does not start background download service
+PASS: browser selects declared main video despite earlier ad video request
+PASS: browser blocks known ad media, popup and top-level substitution requests
+PASS: parsing browser is destroyed before native playback
+PASS: player explicit cache action creates a manual background download and completes
+PASS: real HLS fixture parsed
+PASS: cached segment reused without a second upstream request
+PASS: pause blocks uncached requests and preserves complete segments
+PASS: foreground service downloads all remaining segments
+PASS: loopback rewritten playlist is served
+PASS: loopback Range requests supported
+PASS: hierarchical download queue deduplicates episode URLs
+PASS: queued episode resolves and downloads without opening player: 已完成
+PASS: cached segment remains readable with upstream offline
+PASS: persisted task and cached files recover after store reload
+PASS: LibVLC decoded cached HLS offline with video output and advancing time
+PASS: cache capacity limit enforced
+PASS: downloaded-files filter excludes unfinished tasks
+PASS: completed offline file appears in file management
+PASS: delete removes task and local resources
+PASS: episode row Right then Confirm opens download dialog instead of player
+
+
+MediaGuardTest：9项通过，覆盖已知广告域名、广告路径、广告参数、不安全协议、签名CDN正常地址、同文档片段、页面替换与HLS广告资源拒绝。
+SourcesTest：MXdm / akianime / xfdmneo离线HTML检索、线路、播放器配置解析通过；额外确认不采纳任意脚本媒体地址、拒绝已知广告视频、优先明确Artplayer配置。
+签名APK版本1.5.0 / versionCode 7。未复验Android 5；广告内嵌、混淆、后续动态子清单不在完整覆盖范围。截图仅展示自生成测试片。

@@ -18,7 +18,8 @@ public final class PlayerActivity extends Activity {
     private final Handler ui=new Handler(Looper.getMainLooper());
     private final ExecutorService worker=Executors.newSingleThreadExecutor();
     private ArrayList<String> names,urls;
-    private String title,mediaUrl="";
+    private String title,mediaUrl="",resolvedUrl="";
+    private String browserCandidate="";private int browserCandidateCount;
     private Sources.Source source;
     private LibVLC vlc;
     private MediaPlayer player;
@@ -87,6 +88,7 @@ public final class PlayerActivity extends Activity {
         button(row,"选集",new Runnable(){public void run(){selectEpisode();}});
         button(row,"解码",new Runnable(){public void run(){decoder();}});
         button(row,"重试",new Runnable(){public void run(){resumeAt=player==null?resumeAt:Math.max(0,player.getTime());loadEpisode();}});
+        button(row,"缓存下载",new Runnable(){public void run(){requestDownload();}});
         button(row,"下载管理",new Runnable(){public void run(){startActivity(new Intent(PlayerActivity.this,DownloadsActivity.class));}});
         button(row,"收起",new Runnable(){public void run(){showControls(false);}});
         pause.requestFocus();
@@ -99,7 +101,7 @@ public final class PlayerActivity extends Activity {
     private void clearPlayer(){cover.setVisibility(View.VISIBLE);if(player!=null){player.setEventListener(null);player.stop();player.getVLCVout().detachViews();player.release();player=null;}}
     private void loadEpisode() {
         if(!foreground||vlc==null)return;
-        final int token=++generation;clearBrowser();clearPlayer();resolving=true;mediaUrl="";seek.setProgress(0);status("正在解析 · "+source.name);showControls(true);saveHistory();
+        final int token=++generation;clearBrowser();clearPlayer();resolving=true;mediaUrl="";resolvedUrl="";browserCandidate="";browserCandidateCount=0;seek.setProgress(0);status("正在解析 · "+source.name);showControls(true);saveHistory();
         final String page=urls.get(index);
         final DownloadStore.Task existing=DownloadStore.get(this).find(source.id,page);
         if(existing!=null&&(existing.complete()||cacheOnly!=null)){
@@ -114,51 +116,55 @@ public final class PlayerActivity extends Activity {
     }
     private boolean active(int token){return foreground&&!isDestroyed()&&token==generation;}
     @SuppressWarnings("deprecation") private void resolveInBrowser(final String page,final int token) {
-        status("正在读取播放页面；若超时可返回换源");
-        browser=new WebView(this);WebSettings settings=browser.getSettings();settings.setJavaScriptEnabled(true);settings.setDomStorageEnabled(true);settings.setAllowFileAccess(false);settings.setAllowContentAccess(false);settings.setSupportMultipleWindows(false);settings.setBlockNetworkImage(true);settings.setMediaPlaybackRequiresUserGesture(true);settings.setUserAgentString(source.agent());
+        status("安全解析中 · 已限制网页跳转、弹窗与广告请求");
+        browser=new WebView(this);WebSettings settings=browser.getSettings();settings.setJavaScriptEnabled(true);settings.setDomStorageEnabled(true);settings.setAllowFileAccess(false);settings.setAllowContentAccess(false);settings.setSupportMultipleWindows(false);settings.setJavaScriptCanOpenWindowsAutomatically(false);settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);settings.setBlockNetworkImage(true);settings.setMediaPlaybackRequiresUserGesture(true);settings.setUserAgentString(source.agent());
+        browser.setDownloadListener(new DownloadListener(){public void onDownloadStart(String a,String b,String c,String d,long e){}});
+        browser.setWebChromeClient(new WebChromeClient(){
+            @Override public boolean onCreateWindow(WebView v,boolean d,boolean g,Message m){return false;}
+            @Override public boolean onJsAlert(WebView v,String u,String m,JsResult r){r.cancel();return true;}
+            @Override public boolean onJsConfirm(WebView v,String u,String m,JsResult r){r.cancel();return true;}
+            @Override public void onPermissionRequest(PermissionRequest r){r.deny();}
+        });
         root.addView(browser,new FrameLayout.LayoutParams(1,1,Gravity.BOTTOM|Gravity.RIGHT));browser.setFocusable(false);
         browser.setWebViewClient(new WebViewClient(){
-            @Override public boolean shouldOverrideUrlLoading(WebView view,String url){return !Sources.http(url);}
-            @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){
-                final String url=request.getUrl().toString();
-                if(Sources.media(url)){
-                    ui.post(new Runnable(){public void run(){
-                        if(!active(token)||!resolving)return;
-                        resolving=false;clearBrowser();
-                        worker.execute(new Runnable(){public void run(){
-                            try{
-                                Sources.checkMedia(source,url,page);
-                                ui.post(new Runnable(){public void run(){if(active(token))beginMedia(url,false);}});
-                            }catch(final Exception error){
-                                ui.post(new Runnable(){public void run(){if(active(token))status(error.getMessage());}});
-                            }
-                        }});
-                    }});
-                    return new WebResourceResponse("text/plain","UTF-8",new java.io.ByteArrayInputStream(new byte[0]));
-                }
-                return null;
-            }
-        });browser.loadUrl(page);
+            @Override public boolean shouldOverrideUrlLoading(WebView view,String url){return !MediaGuard.sameDocument(page,url);}
+            @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request){return MediaGuard.blocked(request.getUrl().toString())||(request.isForMainFrame()&&!MediaGuard.sameDocument(page,request.getUrl().toString()));}
+            @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){String url=request.getUrl().toString();if(MediaGuard.blocked(url)||Sources.media(url))return new WebResourceResponse("text/plain","UTF-8",new java.io.ByteArrayInputStream(new byte[0]));return null;}
+        });browser.loadUrl(page);pollDeclaredVideo(page,token);
+    }
+    private void pollDeclaredVideo(final String page,final int token){
+        ui.postDelayed(new Runnable(){public void run(){if(!active(token)||!resolving||browser==null)return;
+            String script="(function(){var out={configured:[],videos:[]};Object.keys(window).filter(function(k){return /^player_[a-zA-Z0-9_]+$/.test(k);}).forEach(function(k){var p=window[k];if(p&&p.url)out.configured.push({url:p.url,encrypt:p.encrypt||0});});document.querySelectorAll('video').forEach(function(v){var u=v.currentSrc||v.getAttribute('src');if(u)out.videos.push(new URL(u,document.baseURI).href);});return JSON.stringify(out);})()";
+            browser.evaluateJavascript(script,new ValueCallback<String>(){public void onReceiveValue(String value){if(!active(token)||!resolving)return;String selected="";boolean configured=false;
+                try{Object decoded=new JSONTokener(value).nextValue();JSONObject object=new JSONObject(String.valueOf(decoded));JSONArray declared=object.getJSONArray("configured");for(int i=0;i<declared.length();i++){JSONObject config=declared.getJSONObject(i);String found=Sources.extractMedia("player_guard="+config.toString());if(found!=null&&!MediaGuard.blocked(found)){selected=found;configured=true;break;}}
+                    if(selected.isEmpty()){JSONArray videos=object.getJSONArray("videos");for(int i=0;i<videos.length();i++){String found=videos.getString(i);if(Sources.media(found)&&!MediaGuard.blocked(found)){selected=found;break;}}}
+                }catch(Exception ignored){}
+                if(!selected.isEmpty()){if(selected.equals(browserCandidate))browserCandidateCount++;else{browserCandidate=selected;browserCandidateCount=1;}
+                    if(configured||browserCandidateCount>=3){final String candidate=selected;resolving=false;clearBrowser();worker.execute(new Runnable(){public void run(){try{final String checked=Sources.checkMedia(source,candidate,page);ui.post(new Runnable(){public void run(){if(active(token))beginMedia(checked,false);}});}catch(final Exception e){ui.post(new Runnable(){public void run(){if(active(token))status(e.getMessage());}});}}});return;}
+                }pollDeclaredVideo(page,token);
+            }});
+        }},750);
     }
     private void beginMedia(final String address,final boolean software) {
         if(!foreground||vlc==null)return;
         if(software||address.startsWith("file:")||(!DownloadService.base.isEmpty()&&address.startsWith(DownloadService.base))){playMedia(address,software);return;}
-        final int token=++generation;
-        final Sources.Source cacheSource=source;final String cachePage=urls.get(index),cacheTitle=title,cacheEpisode=names.get(index);
-        status("准备本地缓存 · 默认后台下载当前集");
-        DownloadService.start(this);
-        worker.execute(new Runnable(){public void run(){
-            try{
-                final DownloadStore store=DownloadStore.get(PlayerActivity.this);
-                final DownloadStore.Task task=store.prepare(cacheSource,cachePage,cacheTitle,cacheEpisode,address);
-                boolean automatic=prefs.getBoolean("autoDownload",true);
-                if(task.paused&&!task.complete()){task.paused=false;}
-                if(automatic)store.enqueue(task);
-                if(task.hls&&!task.complete())for(int n=0;n<Math.min(3,task.resources.size());n++)store.resource(task,n);
-                final String local=task.complete()?Uri.fromFile(new java.io.File(task.entry())).toString():task.hls?DownloadService.url(task):address;
-                ui.post(new Runnable(){public void run(){if(!active(token))return;cacheTask=task;playMedia(local,software);}});
-            }catch(final Exception error){ui.post(new Runnable(){public void run(){if(!active(token))return;Toast.makeText(PlayerActivity.this,"本地缓存暂不可用："+error.getMessage()+"；使用在线缓冲",Toast.LENGTH_LONG).show();cacheTask=null;playMedia(address,software);}});}
-        }});
+        try{MediaGuard.check(address);}catch(Exception e){status(e.getMessage());return;}
+        resolvedUrl=address;
+        final DownloadStore.Task existing=DownloadStore.get(this).find(source.id,urls.get(index));
+        if(existing!=null&&existing.complete()){cacheTask=existing;playMedia(Uri.fromFile(new java.io.File(existing.entry())).toString(),software);return;}
+        if(cacheOnly!=null&&existing!=null&&existing.hls){
+            if(existing.paused){status("缓存已暂停，请到下载管理继续");return;}
+            DownloadService.start(this);final int token=++generation;worker.execute(new Runnable(){public void run(){try{final String local=DownloadService.url(existing);ui.post(new Runnable(){public void run(){if(active(token))playMedia(local,software);}});}catch(final Exception e){ui.post(new Runnable(){public void run(){if(active(token))status(e.getMessage());}});}}});return;
+        }
+        // Ordinary playback uses only the player's memory buffer; never creates a disk task.
+        playMedia(address,software);
+    }
+    private void requestDownload(){
+        final Sources.Source chosen=source;final String page=urls.get(index),name=names.get(index),series=title,address=resolvedUrl;
+        final DownloadStore store=DownloadStore.get(this);DownloadStore.Task old=store.find(chosen.id,page);
+        if(old!=null&&old.complete()){Toast.makeText(this,"本集已下载，可在下载管理离线播放",Toast.LENGTH_LONG).show();return;}
+        DownloadService.start(this);Toast.makeText(this,"已请求缓存下载；可在下载管理查看",Toast.LENGTH_SHORT).show();
+        worker.execute(new Runnable(){public void run(){try{DownloadStore.Task task=address.isEmpty()?store.enqueueEpisode(chosen,page,series,name):store.prepare(chosen,page,series,name,address);store.enqueue(task);}catch(final Exception e){ui.post(new Runnable(){public void run(){if(!isDestroyed())Toast.makeText(PlayerActivity.this,"下载失败："+e.getMessage(),Toast.LENGTH_LONG).show();}});}}});
     }
     private void playMedia(final String address,final boolean software) {
         if(!foreground||vlc==null)return;

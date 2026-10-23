@@ -1,0 +1,9 @@
+PASS: ad subdomain blocked
+PASS: known ad host blocked
+PASS: preroll path blocked
+PASS: explicit ad query blocked
+PASS: external app and script schemes blocked
+PASS: signed CDN hashes remain valid
+PASS: same document fragment allowed
+PASS: cross-origin and top-level page substitution blocked
+PASS: explicit ad resources in HLS rejected

@@ -21,6 +21,9 @@ public class SourcesTest {
         if(Sources.extractMedia("<html>not a player</html>")!=null)throw new AssertionError("HTML must not become media");
         if(Sources.media("https://example.org/movie.m3u8.html")||Sources.http("file:///etc/passwd")||Sources.http("https://name:password@example.org/"))throw new AssertionError("URL checks");
         if(!Sources.media("https://example.org/movie.m3u8?x=a%2Bb"))throw new AssertionError("Signed URL support");
+        if(Sources.extractMedia("<script>var unrelated={url:'https://cdn.example.org/preroll/ad.m3u8'};var random='https://cdn.example.org/other.m3u8';</script>")!=null)throw new AssertionError("Unrelated script media must not become the feature");
+        if(Sources.extractMedia("<video src='https://ads.example.org/movie.mp4'></video>")!=null)throw new AssertionError("Known ad video must be blocked");
+        if(!"https://cdn.example.org/main.m3u8".equals(Sources.extractMedia("var random={url:'https://cdn.example.org/unrelated.mp4'};new Artplayer({container:'.player',url:'https://cdn.example.org/main.m3u8',customType:{}})")))throw new AssertionError("Declared player URL must win over unrelated media");
         System.out.println("SourcesTest passed");
     }
 }

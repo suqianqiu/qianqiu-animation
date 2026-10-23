@@ -65,7 +65,7 @@ public final class Sources {
         String requested=address;
         Set<String> missingOnce=new HashSet<String>();
         for(int redirects=0;redirects<5;redirects++) {
-            if(!http(address))throw new IOException("仅支持HTTP或HTTPS地址");
+            MediaGuard.check(address);if(!http(address))throw new IOException("仅支持HTTP或HTTPS地址");
             if(LinkHealth.isBlocked(address)){if(!requested.equals(address))LinkHealth.markDead(requested);throw new IOException("地址已失效（确认404/410），已自动过滤");}
             HttpURLConnection c=(HttpURLConnection)new URL(address).openConnection();
             if(c instanceof javax.net.ssl.HttpsURLConnection&&CompatTls.factory()!=null)
@@ -155,12 +155,16 @@ public final class Sources {
             if(encoding==1)url=URLDecoder.decode(url,"UTF-8");
             else if(encoding==2)url=URLDecoder.decode(new String(Base64.decode(url,Base64.DEFAULT),"UTF-8"),"UTF-8");
             else if(encoding!=0)url="";
-            if(media(url))return url;
+            if(media(url)&&!MediaGuard.blocked(url))return url;
+        }
+        // Accept the URL property of a declared player constructor, never arbitrary script URLs.
+        Matcher constructor=Pattern.compile("new\\s+(?:Artplayer|DPlayer)\\s*\\(\\s*\\{([^{}]{0,12000})",Pattern.DOTALL).matcher(text);
+        while(constructor.find()){
+            Matcher property=Pattern.compile("(?:^|,)\\s*url\\s*:\\s*(['\"])(.*?)\\1",Pattern.DOTALL).matcher(constructor.group(1));
+            if(property.find()){String u=property.group(2).replace("\\/","/");if(media(u)&&!MediaGuard.blocked(u))return u;}
         }
         org.jsoup.nodes.Document doc=Jsoup.parse(text);
-        for(org.jsoup.nodes.Element e:doc.select("video[src],source[src]")) {String u=e.attr("src");if(media(u))return u;}
-        Matcher literal=Pattern.compile("(?:[\"']?(?:url|file|src)[\"']?)\\s*[:=]\\s*[\"'](https?[^\"'<>\\s]+)[\"']",Pattern.CASE_INSENSITIVE).matcher(text);
-        while(literal.find()) {String u=Parser.unescapeEntities(literal.group(1).replace("\\/","/").replace("\\u0026","&"),false);if(media(u))return u;}
+        for(org.jsoup.nodes.Element e:doc.select("video[src],source[src]")) {String u=e.attr("src");if(media(u)&&!MediaGuard.blocked(u))return u;}
         return null;
     }
     public static String resolve(Source source,String page) throws Exception {
@@ -169,18 +173,18 @@ public final class Sources {
         org.jsoup.nodes.Document doc=Jsoup.parse(raw,page);
         int tried=0;
         for(org.jsoup.nodes.Element frame:doc.select("iframe[src]")) {
-            String src=frame.attr("src");if(src.isEmpty()||!http(frame.absUrl("src")))continue;
+            String src=frame.attr("src");if(src.isEmpty()||!http(frame.absUrl("src"))||MediaGuard.blocked(frame.absUrl("src")))continue;
             if(++tried>2)break;
             String nested=fetch(source,frame.absUrl("src"));video=extractMedia(nested);if(video!=null)return checkMedia(source,video,page);
         }
         return null;
     }
-    /** Small ranged GET; other errors remain playable candidates for the native player. */
+    /** Validate redirects and identifiable ad endpoints before native playback. */
     public static String checkMedia(Source source,String original,String referer) throws Exception {
         String address=original;Set<String> missingOnce=new HashSet<String>();
         for(int step=0;step<6;step++){
             if(LinkHealth.isBlocked(address)||LinkHealth.isBlocked(original)){if(http(referer))LinkHealth.markDead(referer);throw new IOException("视频地址已失效（404/410），请换线路");}
-            if(!http(address))throw new IOException("无效视频地址");
+            MediaGuard.check(address);if(!http(address))throw new IOException("无效视频地址");
             HttpURLConnection c=(HttpURLConnection)new URL(address).openConnection();
             if(c instanceof javax.net.ssl.HttpsURLConnection&&CompatTls.factory()!=null)((javax.net.ssl.HttpsURLConnection)c).setSSLSocketFactory(CompatTls.factory());
             c.setConnectTimeout(3000);c.setReadTimeout(3000);c.setInstanceFollowRedirects(false);
@@ -188,11 +192,12 @@ public final class Sources {
             c.setRequestProperty("Referer",source.rule.optString("referer").isEmpty()?referer:source.rule.optString("referer"));
             int code;
             try{code=c.getResponseCode();if(code==301||code==302||code==303||code==307||code==308){address=absolute(address,c.getHeaderField("Location"));continue;}}
-            catch(IOException temporary){return original;}
+            catch(IOException temporary){throw new IOException("无法验证视频地址，请重试或换线路",temporary);}
             finally{c.disconnect();}
             if(code==404||code==410){if(missingOnce.add(address))continue;LinkHealth.markDead(address);LinkHealth.markDead(original);if(http(referer))LinkHealth.markDead(referer);throw new IOException("视频地址已失效（HTTP "+code+"），已自动过滤");}
-            return original;
+            if(address.toLowerCase(Locale.US).contains(".m3u8")){String manifest=DownloadStore.fetchText(address,source.agent(),source.rule.optString("referer").isEmpty()?referer:source.rule.optString("referer"));MediaGuard.checkPlaylist(address,manifest);}
+            return address;
         }
-        return original;
+        throw new IOException("视频重定向过多，请换线路");
     }
 }
