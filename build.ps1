@@ -1,4 +1,4 @@
-param([switch]$Install, [string]$Device='')
+param([switch]$Install, [string]$Device='192.168.1.100:5555')
 $ErrorActionPreference='Stop'
 Set-Location $PSScriptRoot
 $sdk=Join-Path $env:LOCALAPPDATA 'Android/Sdk'
@@ -44,12 +44,11 @@ Run "$bt/zipalign.exe" @('-f','4','build/unsigned.apk','build/aligned-armv7.apk'
 if(!(Test-Path anime-local.jks)) {
     Run keytool @('-genkeypair','-keystore','anime-local.jks','-storepass','simplelive-local','-keypass','simplelive-local','-alias','simplelive','-keyalg','RSA','-keysize','2048','-validity','10000','-dname','CN=KanDongman Local Build')
 }
-Run "$bt/apksigner.bat" @('sign','--ks','anime-local.jks','--ks-pass','pass:simplelive-local','--key-pass','pass:simplelive-local','--min-sdk-version','21','--v1-signing-enabled','true','--out','dist/KanDongman-1.2.0.apk','build/aligned-armv7.apk')
-Run "$bt/apksigner.bat" @('verify','--verbose','dist/KanDongman-1.2.0.apk')
-Run "$bt/aapt.exe" @('dump','badging','dist/KanDongman-1.2.0.apk')
+Run "$bt/apksigner.bat" @('sign','--ks','anime-local.jks','--ks-pass','pass:simplelive-local','--key-pass','pass:simplelive-local','--min-sdk-version','21','--v1-signing-enabled','true','--out','dist/KanDongman-1.4.0.apk','build/aligned-armv7.apk')
+Run "$bt/apksigner.bat" @('verify','--verbose','dist/KanDongman-1.4.0.apk')
+Run "$bt/aapt.exe" @('dump','badging','dist/KanDongman-1.4.0.apk')
 if($Install) {
-    if(!$Device){throw 'Specify -Device with your own ADB device serial or address'}
-    Run adb @('-s',$Device,'install','-r','dist/KanDongman-1.2.0.apk')
+    Run adb @('-s',$Device,'install','-r','dist/KanDongman-1.4.0.apk')
     Run adb @('-s',$Device,'shell','am','start','-n','com.qianq.kandongman/.MainActivity')
 }
-Write-Output 'Built dist/KanDongman-1.2.0.apk'
+Write-Output 'Built dist/KanDongman-1.4.0.apk'

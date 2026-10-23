@@ -112,7 +112,7 @@ public final class Sources {
             String name=names.item(0).getTextContent().replaceAll("\\s+"," ").trim(),href=attr(urls.item(0),"href");
             if(name.isEmpty()||href.isEmpty())continue;
             String address=absolute(source.base(),href);
-            if(!LinkHealth.isBlocked(address)&&seen.add(address))result.add(new Item(name,address));
+            if(!LinkHealth.isBlocked(address)&&seen.add(address))result.add(new Item(name+(MediaLabels.mandarin(list.item(i).getTextContent())&&!MediaLabels.mandarin(name)?"（国语）":""),address));
         }
         return result;
     }
@@ -129,7 +129,10 @@ public final class Sources {
                 if(title.isEmpty())title="第"+(items.size()+1)+"集";
                 if(!LinkHealth.isBlocked(url)&&seen.add(url))items.add(new Item(title,url));
             }
-            if(!items.isEmpty())roads.add(new Road("线路 "+(roads.size()+1)+" · "+items.size()+" 集",items));
+            if(!items.isEmpty()){
+                String roadName="线路 "+(roads.size()+1);org.jsoup.nodes.Document html=Jsoup.parse(raw);org.jsoup.select.Elements tabs=html.select(".module-tab-item, .play_source_tab a, .nav-tabs li, .play-source li");if(tabs.size()==list.getLength()&&i<tabs.size()){String label=tabs.get(i).text().trim();if(!label.isEmpty()&&label.length()<60)roadName=label;}
+                roads.add(new Road(roadName+" · "+items.size()+" 集",items));
+            }
         }
         return roads;
     }

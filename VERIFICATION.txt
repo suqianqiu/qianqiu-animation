@@ -110,3 +110,29 @@ APK：版本1.1.1 / versionCode3，原包名和签名，Android5/API21/ARMv7。
 桌面单元测试：tests/SourcesTest.java、tests/TlsTest.java。
 逐地址网络结果：verification/network/results.json。
 界面证据：build/main.png、search2.png、roads2.png、final-player.png、progress.xml、resume.xml、ready.png。
+
+
+2026-10-24 / 1.4.0 / AM9 PRO Android 14
+19项Android仪器测试，测试源为自生成18秒640x360 H264/AAC测试片。测试结果：
+PASS: master, relative URLs, AES key and fMP4 map rewritten
+PASS: live playlist rejected
+PASS: unsupported byte-range playlist rejected before caching
+PASS: real HLS fixture parsed
+PASS: cached segment reused without a second upstream request
+PASS: pause blocks uncached requests and preserves complete segments
+PASS: foreground service downloads all remaining segments
+PASS: loopback rewritten playlist is served
+PASS: loopback Range requests supported
+PASS: hierarchical download queue deduplicates episode URLs
+PASS: queued episode resolves and downloads without opening player: 已完成
+PASS: cached segment remains readable with upstream offline
+PASS: persisted task and cached files recover after store reload
+PASS: LibVLC decoded cached HLS offline with video output and advancing time
+PASS: cache capacity limit enforced
+PASS: downloaded-files filter excludes unfinished tasks
+PASS: completed offline file appears in file management
+PASS: delete removes task and local resources
+PASS: episode row Right then Confirm opens download dialog instead of player
+
+
+目录464项；补充35项、合并2组重复译名。90/90海报资源存在。语言判断根据来源声明，未做音频识别。正气大侠仅补目录和别名，播放未验证成功。Android 5未复验本轮新增功能。

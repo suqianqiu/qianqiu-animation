@@ -3,3 +3,5 @@ assets/** -text
 *.pem -text
 *.png binary
 *.jpg binary
+
+*.json text eol=lf

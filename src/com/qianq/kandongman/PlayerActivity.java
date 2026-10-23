@@ -30,6 +30,8 @@ public final class PlayerActivity extends Activity {
     private LinearLayout controls;
     private TextView message,time;
     private Button pause;
+    private String cacheOnly="";
+    private DownloadStore.Task cacheTask;
     private SeekBar seek;
     private int index,mode,generation;
     private long resumeAt,lastSave;
@@ -47,13 +49,21 @@ public final class PlayerActivity extends Activity {
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);getWindow().setFlags(1024,1024);getWindow().addFlags(128);
         prefs=getSharedPreferences("anime",MODE_PRIVATE);mode=Math.max(0,Math.min(2,prefs.getInt("mode",0)));
+        cacheOnly=getIntent().getStringExtra("cacheId");
+        if(cacheOnly!=null){
+            DownloadStore.Task cached=DownloadStore.get(this).find(cacheOnly);
+            if(cached==null){finish();return;}
+            getIntent().putExtra("title",cached.title);getIntent().putExtra("source",cached.source);
+            ArrayList<String> cn=new ArrayList<String>(),cu=new ArrayList<String>();cn.add(cached.episode);cu.add(cached.page);
+            getIntent().putStringArrayListExtra("names",cn);getIntent().putStringArrayListExtra("urls",cu);
+        }
         names=getIntent().getStringArrayListExtra("names");urls=getIntent().getStringArrayListExtra("urls");title=getIntent().getStringExtra("title");
         if(names==null||urls==null||urls.isEmpty()||names.size()!=urls.size()){finish();return;}
-        index=Math.max(0,Math.min(urls.size()-1,getIntent().getIntExtra("index",0)));resumeAt=Math.max(0,getIntent().getLongExtra("position",0));
+        index=Math.max(0,Math.min(urls.size()-1,getIntent().getIntExtra("index",0)));resumeAt=Math.max(0,getIntent().getLongExtra("position",0));if(cacheOnly!=null)resumeAt=prefs.getLong("cachePosition/"+cacheOnly,0);
         try {for(Sources.Source s:Sources.load(this))if(s.id.equals(getIntent().getStringExtra("source")))source=s;}catch(Exception ignored){}
         if(source==null){finish();return;}
         buildUi();
-        try {ArrayList<String> opts=new ArrayList<String>();opts.add("--network-caching=1800");opts.add("--no-video-title-show");opts.add("--aout=opensles_android");opts.add("--gnutls-dir-trust="+CompatTls.directory());vlc=new LibVLC(this,opts);}
+        try {ArrayList<String> opts=new ArrayList<String>();opts.add("--network-caching=10000");opts.add("--no-video-title-show");opts.add("--aout=opensles_android");opts.add("--gnutls-dir-trust="+CompatTls.directory());vlc=new LibVLC(this,opts);}
         catch(Throwable error){status("播放器初始化失败："+error.getClass().getSimpleName());}
         saveHistory();ui.post(tick);
     }
@@ -77,6 +87,7 @@ public final class PlayerActivity extends Activity {
         button(row,"选集",new Runnable(){public void run(){selectEpisode();}});
         button(row,"解码",new Runnable(){public void run(){decoder();}});
         button(row,"重试",new Runnable(){public void run(){resumeAt=player==null?resumeAt:Math.max(0,player.getTime());loadEpisode();}});
+        button(row,"下载管理",new Runnable(){public void run(){startActivity(new Intent(PlayerActivity.this,DownloadsActivity.class));}});
         button(row,"收起",new Runnable(){public void run(){showControls(false);}});
         pause.requestFocus();
     }
@@ -90,6 +101,11 @@ public final class PlayerActivity extends Activity {
         if(!foreground||vlc==null)return;
         final int token=++generation;clearBrowser();clearPlayer();resolving=true;mediaUrl="";seek.setProgress(0);status("正在解析 · "+source.name);showControls(true);saveHistory();
         final String page=urls.get(index);
+        final DownloadStore.Task existing=DownloadStore.get(this).find(source.id,page);
+        if(existing!=null&&(existing.complete()||cacheOnly!=null)){
+            if(!existing.complete()&&existing.paused){resolving=false;status("缓存已暂停，请到下载管理继续");return;}
+            resolving=false;beginMedia(existing.address,false);return;
+        }
         worker.execute(new Runnable(){public void run(){
             try {final String found=Sources.resolve(source,page);ui.post(new Runnable(){public void run(){if(!active(token))return;if(found!=null){resolving=false;beginMedia(found,false);}else resolveInBrowser(page,token);}});}
             catch(final Exception error){ui.post(new Runnable(){public void run(){if(!active(token))return;resolving=false;status("解析失败："+error.getMessage()+"；返回换线路或点击重试。");}});}
@@ -126,6 +142,26 @@ public final class PlayerActivity extends Activity {
     }
     private void beginMedia(final String address,final boolean software) {
         if(!foreground||vlc==null)return;
+        if(software||address.startsWith("file:")||(!DownloadService.base.isEmpty()&&address.startsWith(DownloadService.base))){playMedia(address,software);return;}
+        final int token=++generation;
+        final Sources.Source cacheSource=source;final String cachePage=urls.get(index),cacheTitle=title,cacheEpisode=names.get(index);
+        status("准备本地缓存 · 默认后台下载当前集");
+        DownloadService.start(this);
+        worker.execute(new Runnable(){public void run(){
+            try{
+                final DownloadStore store=DownloadStore.get(PlayerActivity.this);
+                final DownloadStore.Task task=store.prepare(cacheSource,cachePage,cacheTitle,cacheEpisode,address);
+                boolean automatic=prefs.getBoolean("autoDownload",true);
+                if(task.paused&&!task.complete()){task.paused=false;}
+                if(automatic)store.enqueue(task);
+                if(task.hls&&!task.complete())for(int n=0;n<Math.min(3,task.resources.size());n++)store.resource(task,n);
+                final String local=task.complete()?Uri.fromFile(new java.io.File(task.entry())).toString():task.hls?DownloadService.url(task):address;
+                ui.post(new Runnable(){public void run(){if(!active(token))return;cacheTask=task;playMedia(local,software);}});
+            }catch(final Exception error){ui.post(new Runnable(){public void run(){if(!active(token))return;Toast.makeText(PlayerActivity.this,"本地缓存暂不可用："+error.getMessage()+"；使用在线缓冲",Toast.LENGTH_LONG).show();cacheTask=null;playMedia(address,software);}});}
+        }});
+    }
+    private void playMedia(final String address,final boolean software) {
+        if(!foreground||vlc==null)return;
         if(LinkHealth.isBlocked(address)){status("视频地址已失效（404/410），请返回换线路");return;}
         final int token=++generation;clearPlayer();mediaUrl=address;softRetry=software;seenVideo=false;
         status("正在连接 · "+((mode==2||software)?"软解":mode==1?"硬解":"优先硬解"));pause.setText("暂停");
@@ -144,7 +180,7 @@ public final class PlayerActivity extends Activity {
                     case MediaPlayer.Event.Opening:status("正在打开视频");break;
                     case MediaPlayer.Event.Buffering:if(event.getBuffering()<100)status("缓冲 "+(int)event.getBuffering()+"%");break;
                     case MediaPlayer.Event.Playing:
-                        status("正在播放 · 确定键打开控制栏，返回选集");
+                        status("正在播放 · 确定键打开控制栏，下载管理可查看本地缓存");
                         if(resumeAt>0){player.setTime(resumeAt);resumeAt=0;}
                         ui.postDelayed(new Runnable(){public void run(){if(active(token)&&player!=null&&player.isPlaying()&&!seeking)showControls(false);}},8000);break;
                     case MediaPlayer.Event.Vout:if(event.getVoutCount()>0){seenVideo=true;cover.setVisibility(View.GONE);android.util.Log.i("KanDongman","video-output ready");}break;
@@ -153,7 +189,7 @@ public final class PlayerActivity extends Activity {
                 }
             }});
             Media media=new Media(vlc,Uri.parse(address));
-            try {media.setHWDecoderEnabled(mode!=2&&!software,mode==1);media.addOption(":network-caching=1800");media.addOption(":http-user-agent="+source.agent());media.addOption(":http-referrer="+(source.rule.optString("referer").isEmpty()?urls.get(index):source.rule.optString("referer")));player.setMedia(media);}finally{media.release();}
+            try {media.setHWDecoderEnabled(mode!=2&&!software,mode==1);media.addOption(":network-caching=10000");media.addOption(":file-caching=1500");media.addOption(":http-user-agent="+source.agent());media.addOption(":http-referrer="+(source.rule.optString("referer").isEmpty()?urls.get(index):source.rule.optString("referer")));player.setMedia(media);}finally{media.release();}
             player.play();
             ui.postDelayed(new Runnable(){public void run(){if(!active(token)||seenVideo)return;if(mode==0&&!softRetry)beginMedia(address,true);else{clearPlayer();status("未能加载画面，请返回换线路或来源。");showControls(true);}}},25000);
         }catch(Throwable error){clearPlayer();status("播放器错误："+error.getClass().getSimpleName());showControls(true);}
@@ -162,8 +198,8 @@ public final class PlayerActivity extends Activity {
     private void step(int direction){if(index+direction<0||index+direction>=urls.size()){Toast.makeText(this,direction>0?"已经是最后一集":"已经是第一集",Toast.LENGTH_SHORT).show();return;}savePosition();index+=direction;resumeAt=0;loadEpisode();}
     private void selectEpisode(){AlertDialog dialog=new AlertDialog.Builder(this).setTitle("选择剧集").setSingleChoiceItems(names.toArray(new String[0]),index,new DialogInterface.OnClickListener(){public void onClick(DialogInterface d,int which){d.dismiss();savePosition();index=which;resumeAt=0;loadEpisode();}}).setNegativeButton("返回",null).show();TvStyle.dialog(dialog);}
     private void decoder(){AlertDialog dialog=new AlertDialog.Builder(this).setTitle("解码方式").setSingleChoiceItems(modes,mode,new DialogInterface.OnClickListener(){public void onClick(DialogInterface d,int which){d.dismiss();mode=which;prefs.edit().putInt("mode",mode).apply();resumeAt=player==null?resumeAt:Math.max(0,player.getTime());if(!mediaUrl.isEmpty())beginMedia(mediaUrl,false);}}).setNegativeButton("返回",null).show();TvStyle.dialog(dialog);}
-    private void saveHistory(){try{JSONObject h=new JSONObject();h.put("title",title);h.put("source",source.id);h.put("names",new JSONArray(names));h.put("urls",new JSONArray(urls));prefs.edit().putString("history",h.toString()).putInt("lastIndex",index).putLong("lastPosition",resumeAt).apply();WatchHistory.save(this,h,index,resumeAt);}catch(Exception ignored){}}
-    private void savePosition(){if(player!=null){long at=player.getTime();if(at>=0&&(resumeAt==0||player.isPlaying())){prefs.edit().putInt("lastIndex",index).putLong("lastPosition",at).apply();WatchHistory.update(this,source.id,title,index,at);}}lastSave=System.currentTimeMillis();}
+    private void saveHistory(){if(cacheOnly!=null)return;try{JSONObject h=new JSONObject();h.put("title",title);h.put("source",source.id);h.put("names",new JSONArray(names));h.put("urls",new JSONArray(urls));prefs.edit().putString("history",h.toString()).putInt("lastIndex",index).putLong("lastPosition",resumeAt).apply();WatchHistory.save(this,h,index,resumeAt);}catch(Exception ignored){}}
+    private void savePosition(){if(cacheOnly!=null){if(player!=null&&player.getTime()>=0)prefs.edit().putLong("cachePosition/"+cacheOnly,player.getTime()).apply();lastSave=System.currentTimeMillis();return;}if(player!=null){long at=player.getTime();if(at>=0&&(resumeAt==0||player.isPlaying())){prefs.edit().putInt("lastIndex",index).putLong("lastPosition",at).apply();WatchHistory.update(this,source.id,title,index,at);}}lastSave=System.currentTimeMillis();}
     @Override protected void onStart(){super.onStart();foreground=true;if(vlc!=null&&player==null&&!resolving)loadEpisode();}
     @Override protected void onStop(){savePosition();if(player!=null&&(player.getTime()>0||resumeAt==0))resumeAt=Math.max(0,player.getTime());foreground=false;generation++;resolving=false;clearBrowser();if(root!=null)clearPlayer();super.onStop();}
     @Override protected void onDestroy(){ui.removeCallbacksAndMessages(null);worker.shutdownNow();if(vlc!=null){vlc.release();vlc=null;}super.onDestroy();}

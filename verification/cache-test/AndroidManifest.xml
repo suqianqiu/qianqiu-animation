@@ -1,0 +1,1 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.qianq.kandongman.cachetest"><uses-sdk android:minSdkVersion="21" android:targetSdkVersion="28"/><application android:label="Cache Verification"/><instrumentation android:name="com.qianq.kandongman.CacheTest" android:targetPackage="com.qianq.kandongman"/></manifest>

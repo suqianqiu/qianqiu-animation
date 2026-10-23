@@ -7,6 +7,7 @@ import java.util.*;
 public final class AnimeCatalog {
     public static final class Entry {
         public final String title, initials;
+        public String aliases(){StringBuilder out=new StringBuilder();for(String v:keys)if(!v.equals(normalize(title))&&v.matches(".*[\\p{IsHan}].*")){if(out.length()>0)out.append(" / ");out.append(v);}return out.toString();}
         private final String[] keys;
         Entry(String line) {
             String[] fields=line.split("\\|");
@@ -30,17 +31,68 @@ public final class AnimeCatalog {
         for(Entry entry:all)if((letter=='*'||entry.letter()==letter)&&entry.matches(text))result.add(entry);
         return result;
     }
-    public static ArrayList<Entry> load(){
+    private static ArrayList<Entry> cached;
+    private static final Map<String,Entry> identities=new HashMap<String,Entry>();
+    public static synchronized ArrayList<Entry> load(){
+        if(cached!=null)return new ArrayList<Entry>(cached);
         ArrayList<Entry> all=new ArrayList<Entry>();
-        for(String line:DATA)all.add(new Entry(line));
+        LinkedHashMap<String,String> merged=new LinkedHashMap<String,String>();
+        for(String line:DATA){String[] fields=line.split("\\|");String canonical=fields[0];
+            if(canonical.equals("美食猎人"))canonical="美食的俘虏";
+            if(canonical.equals("百变小樱魔术卡"))canonical="魔卡少女樱";
+            if(!merged.containsKey(canonical))merged.put(canonical,canonical+"|"+fields[1]);
+            String value=merged.get(canonical);for(String field:fields)if(!Arrays.asList(value.split("\\|")).contains(field))value+="|"+field;merged.put(canonical,value);
+        }
+        for(String line:merged.values())all.add(new Entry(line));
         Collections.sort(all,new Comparator<Entry>(){public int compare(Entry a,Entry b){
             int n=Character.compare(a.letter(),b.letter());
             return n!=0?n:a.initials.compareTo(b.initials);
         }});
-        return all;
+        cached=all;for(Entry e:all)identities.put(normalize(e.title),e);for(Entry e:all)for(String k:e.keys)if(!identities.containsKey(k))identities.put(k,e);return new ArrayList<Entry>(all);
     }
+    public static Entry identify(String value){if(cached==null)load();return identities.get(normalize(value));}
+    public static String canonical(String value){Entry e=identify(value);return e==null?value:e.title;}
+    public static ArrayList<String> searchNames(String value){LinkedHashSet<String> names=new LinkedHashSet<String>();names.add(value);Entry e=identify(value);if(e!=null){names.add(e.title);for(String k:e.keys)if(k.matches(".*[\\p{IsHan}].*")&&!k.equals(normalize(e.title)))names.add(k);}return new ArrayList<String>(names);}
+    public static boolean classic(String title){return CLASSICS.contains(title);}
+    private static final Set<String> CLASSICS=new HashSet<String>(Arrays.asList("正气大侠","魔神英雄传","魔动王","圣斗士星矢","铁臂阿童木","森林大帝","聪明的一休","阿拉蕾","忍者乱太郎","哆啦A梦","樱桃小丸子","龙珠","足球小将","灌篮高手","幽游白书","魔卡少女樱","猫和老鼠","黑猫警长","葫芦兄弟","舒克和贝塔","西游记","大闹天宫","天书奇谭","哪吒闹海","正气大侠","天空战记","宇宙骑士","六神合体","魔神坛斗士","铁甲小宝","忍者小英雄","小飞侠彼得潘","花仙子","小甜甜","咪咪流浪记","尼尔斯骑鹅旅行记","汤姆历险记","大白鲸","三眼神童","小糊涂神","大脸猫和蓝皮鼠","海尔兄弟","小贝流浪记","邋遢大王奇遇记","小神仙和小仙女","十二生肖守护神","超级酷乐猫","飞天小女警","忍者神龟","蓝精灵","丁丁历险记","太空堡垒","变形金刚","小熊维尼","小蜜蜂寻亲记","百变雄狮","星际恐龙","丹佛最后的恐龙","大力水手"));
     // Each Chinese character contributes one initial. Polyphonic names are curated explicitly.
     private static final String[] DATA={
+        "正气大侠|zqdx|猜拳超人|cqcr|Jankenman|ジャンケンマン",
+        "天空战记|tkzj|Shurato",
+        "宇宙骑士|yzqs|Tekkaman Blade",
+        "六神合体|lsht|六神合体雷霆王|lshtltw|God Mars",
+        "魔神坛斗士|mstds|铠传|kz|Ronin Warriors",
+        "铁甲小宝|tjxb|B-Robo Kabutack",
+        "忍者小英雄|rzxyx|忍者服部君|rzfbj|Ninja Hattori",
+        "小飞侠彼得潘|xfxbdp|Peter Pan no Bouken",
+        "花仙子|hxz|Hana no Ko Lunlun",
+        "小甜甜|xtt|Candy Candy",
+        "咪咪流浪记|mmllj|无家可归的孩子|wjkgdhz|Remi",
+        "尼尔斯骑鹅旅行记|nesqelxj|Nils",
+        "汤姆历险记|tmlxj|Tom Sawyer no Bouken",
+        "大白鲸|dbj|Mu no Hakugei",
+        "三眼神童|syst|三目童子|smtz|Mitsume ga Tooru",
+        "小糊涂神|xhts",
+        "大脸猫和蓝皮鼠|dlmhlps|蓝皮鼠和大脸猫|lpshdlm",
+        "海尔兄弟|hexd",
+        "小贝流浪记|xbllj",
+        "邋遢大王奇遇记|ltdwqyj|邋遢大王历险记|ltdwlxj",
+        "小神仙和小仙女|xsxhxxn",
+        "十二生肖守护神|sesxshs|十二生肖爆烈战士|sesxblzs",
+        "超级酷乐猫|cjk lm|酷乐猫|klm|Cyborg Kuro-chan",
+        "飞天小女警|ftxnj|The Powerpuff Girls",
+        "忍者神龟|rzsg|Teenage Mutant Ninja Turtles",
+        "蓝精灵|ljl|The Smurfs",
+        "丁丁历险记|ddlxj|The Adventures of Tintin",
+        "太空堡垒|tkbl|Robotech",
+        "变形金刚|bxjg|Transformers",
+        "小熊维尼|xxwn|Winnie the Pooh",
+        "小蜜蜂寻亲记|xmfxqj|昆虫物语|kcwy",
+        "百变雄狮|bbxs|GoBots",
+        "星际恐龙|xjkl|Extreme Dinosaurs",
+        "丹佛最后的恐龙|dfzhdkl|Denver the Last Dinosaur",
+        "大力水手|dlss|Popeye",
+
         "名侦探柯南|mztkn|柯南|kn|Detective Conan",
         "航海王|hhw|海贼王|hzw|One Piece",
         "火影忍者|hyrz|Naruto",

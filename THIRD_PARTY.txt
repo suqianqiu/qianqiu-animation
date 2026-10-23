@@ -32,3 +32,5 @@ Standard certificate-chain, validity and HTTPS hostname validation remain enable
 Desktop tests only: org.json:json:20240303 (public domain), not included in the APK.
 https://github.com/stleary/JSON-java/tree/20240303
 https://repo.maven.apache.org/maven2/org/json/json/20240303/
+
+1.4.0海报：豆瓣公开作品元数据对应的海报缩略图；来源清单verification/poster-sources.json。海报与作品权利归各自权利人，不随应用源码MIT许可授权。

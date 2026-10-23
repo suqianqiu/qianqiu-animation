@@ -1,0 +1,19 @@
+PASS: master, relative URLs, AES key and fMP4 map rewritten
+PASS: live playlist rejected
+PASS: unsupported byte-range playlist rejected before caching
+PASS: real HLS fixture parsed
+PASS: cached segment reused without a second upstream request
+PASS: pause blocks uncached requests and preserves complete segments
+PASS: foreground service downloads all remaining segments
+PASS: loopback rewritten playlist is served
+PASS: loopback Range requests supported
+PASS: hierarchical download queue deduplicates episode URLs
+PASS: queued episode resolves and downloads without opening player: 已完成
+PASS: cached segment remains readable with upstream offline
+PASS: persisted task and cached files recover after store reload
+PASS: LibVLC decoded cached HLS offline with video output and advancing time
+PASS: cache capacity limit enforced
+PASS: downloaded-files filter excludes unfinished tasks
+PASS: completed offline file appears in file management
+PASS: delete removes task and local resources
+PASS: episode row Right then Confirm opens download dialog instead of player
