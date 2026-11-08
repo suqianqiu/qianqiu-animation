@@ -1,0 +1,20 @@
+PASS: cold launch does not show keyboard
+PASS: initial navigation focus stays outside search editor
+PASS: focusing search with D-pad does not auto-open keyboard
+PASS: Confirm on focused search explicitly opens keyboard
+PASS: asynchronous filtering keeps editor focus and keyboard while typing
+PASS: submitting filtered search hides keyboard
+PASS: returning navigation focus to editor keeps keyboard closed
+PASS: Enter explicitly starts text input
+PASS: switching category after keyboard input dismisses keyboard
+PASS: actual pointer click opens keyboard
+PASS: switching tab after pointer input dismisses keyboard
+PASS: clicking search explicitly opens keyboard
+PASS: opening download manager hides keyboard
+PASS: return from another screen does not reopen keyboard
+PASS: catalog alphabet navigation works without keyboard
+PASS: poster navigation works without keyboard
+PASS: keyboard can reopen before Back test
+PASS: first Back closes keyboard
+PASS: first Back preserves current page
+PASS: second Back performs normal page return

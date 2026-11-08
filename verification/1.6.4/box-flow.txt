@@ -1,0 +1,22 @@
+PASS: actual screen opens: fixture
+PASS: remote poster search selects first result instead of editor
+PASS: actual screen opens: 选择线路
+PASS: series detail selects first result instead of editor
+PASS: actual screen opens: 线路 1
+PASS: episode list selects first result instead of editor
+PASS: episodes parsed from actual HTTP response
+PASS: Down selects second episode
+PASS: Back to routes selects first result instead of editor
+PASS: Back to search results selects first result instead of editor
+PASS: Back returns to poster wall
+PASS: actual screen opens: fixture
+PASS: pointer poster search followed by remote navigation selects first result instead of editor
+PASS: actual screen opens: 选择线路
+PASS: pointer-to-remote detail selects first result instead of editor
+PASS: request failure is shown in a visible dialog
+PASS: failure return preserves poster screen and does not jump into editor
+PASS: request failure is shown in a visible dialog
+PASS: actual screen opens: fixture
+PASS: retry after network recovery selects first result instead of editor
+PASS: loading is visible while request is pending
+PASS: Back cancels pending request and ignores late completion

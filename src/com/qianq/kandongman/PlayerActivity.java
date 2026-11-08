@@ -17,6 +17,11 @@ import java.util.concurrent.*;
 public final class PlayerActivity extends Activity {
     private final Handler ui=new Handler(Looper.getMainLooper());
     private final ExecutorService worker=Executors.newSingleThreadExecutor();
+    private final ExecutorService playerWorker=Executors.newSingleThreadExecutor();
+    private final Handler cleanupUi=new Handler(Looper.getMainLooper());
+    private int closingPlayers;
+    private boolean destroyed,pendingSoftware;
+    private String pendingAddress;
     private ArrayList<String> names,urls;
     private String title,mediaUrl="",resolvedUrl="";
     private String browserCandidate="";private int browserCandidateCount;
@@ -64,7 +69,7 @@ public final class PlayerActivity extends Activity {
         try {for(Sources.Source s:Sources.load(this))if(s.id.equals(getIntent().getStringExtra("source")))source=s;}catch(Exception ignored){}
         if(source==null){finish();return;}
         buildUi();
-        try {ArrayList<String> opts=new ArrayList<String>();opts.add("--network-caching=10000");opts.add("--no-video-title-show");opts.add("--aout=opensles_android");opts.add("--gnutls-dir-trust="+CompatTls.directory());vlc=new LibVLC(this,opts);}
+        try {ArrayList<String> opts=new ArrayList<String>();opts.add("--network-caching=10000");opts.add("--no-video-title-show");opts.add("--aout=opensles_android");opts.add("--gnutls-dir-trust="+CompatTls.directory());VideoOutputPolicy.configure(opts);vlc=new LibVLC(this,opts);}
         catch(Throwable error){status("播放器初始化失败："+error.getClass().getSimpleName());}
         saveHistory();ui.post(tick);
     }
@@ -98,7 +103,29 @@ public final class PlayerActivity extends Activity {
     private void status(String text){if(message!=null)message.setText(title+" · "+names.get(index)+"\n"+text);}
     private void showControls(boolean show){controls.setVisibility(show?View.VISIBLE:View.GONE);message.setVisibility(show?View.VISIBLE:View.GONE);if(show)pause.requestFocus();else{root.setFocusableInTouchMode(true);root.requestFocus();}}
     private void clearBrowser(){if(browser!=null){root.removeView(browser);browser.stopLoading();browser.loadUrl("about:blank");browser.destroy();browser=null;}}
-    private void clearPlayer(){cover.setVisibility(View.VISIBLE);if(player!=null){player.setEventListener(null);player.stop();player.getVLCVout().detachViews();player.release();player=null;}}
+    private void clearPlayer(){
+        pendingAddress=null;cover.setVisibility(View.VISIBLE);
+        final MediaPlayer old=player;player=null;
+        if(old==null)return;
+        closingPlayers++;
+        PlayerCleanup.run("listener",new Runnable(){public void run(){old.setEventListener(null);}});
+        playerWorker.execute(new Runnable(){public void run(){
+            PlayerCleanup.run("stop",new Runnable(){public void run(){old.stop();}});
+            cleanupUi.post(new Runnable(){public void run(){
+                PlayerCleanup.run("detach",new Runnable(){public void run(){old.getVLCVout().detachViews();}});
+                playerWorker.execute(new Runnable(){public void run(){
+                    PlayerCleanup.run("release",new Runnable(){public void run(){old.release();}});
+                    cleanupUi.post(new Runnable(){public void run(){closingPlayers--;if(destroyed)releaseVlcWhenIdle();else startPendingPlayback();}});
+                }});
+            }});
+        }});
+    }
+    private void releaseVlcWhenIdle(){
+        if(!destroyed||closingPlayers!=0||playerWorker.isShutdown())return;
+        final LibVLC old=vlc;vlc=null;
+        playerWorker.execute(new Runnable(){public void run(){if(old!=null)PlayerCleanup.run("core-release",new Runnable(){public void run(){old.release();}});}});
+        playerWorker.shutdown();
+    }
     private void loadEpisode() {
         if(!foreground||vlc==null)return;
         final int token=++generation;clearBrowser();clearPlayer();resolving=true;mediaUrl="";resolvedUrl="";browserCandidate="";browserCandidateCount=0;seek.setProgress(0);status("正在解析 · "+source.name);showControls(true);saveHistory();
@@ -169,8 +196,13 @@ public final class PlayerActivity extends Activity {
     private void playMedia(final String address,final boolean software) {
         if(!foreground||vlc==null)return;
         if(LinkHealth.isBlocked(address)){status("视频地址已失效（404/410），请返回换线路");return;}
-        final int token=++generation;clearPlayer();mediaUrl=address;softRetry=software;seenVideo=false;
+        ++generation;clearPlayer();mediaUrl=address;softRetry=software;seenVideo=false;
         status("正在连接 · "+((mode==2||software)?"软解":mode==1?"硬解":"优先硬解"));pause.setText("暂停");
+        pendingAddress=address;pendingSoftware=software;startPendingPlayback();
+    }
+    private void startPendingPlayback(){
+        if(pendingAddress==null||closingPlayers!=0||!foreground||destroyed||vlc==null)return;
+        final String address=pendingAddress;final boolean software=pendingSoftware;final int token=generation;pendingAddress=null;
         android.util.Log.i("KanDongman","start mode="+mode+" software="+software);
         try {
             player=new MediaPlayer(vlc);IVLCVout out=player.getVLCVout();out.setVideoView(surface);out.setWindowSize(surface.getWidth(),surface.getHeight());
@@ -208,7 +240,7 @@ public final class PlayerActivity extends Activity {
     private void savePosition(){if(cacheOnly!=null){if(player!=null&&player.getTime()>=0)prefs.edit().putLong("cachePosition/"+cacheOnly,player.getTime()).apply();lastSave=System.currentTimeMillis();return;}if(player!=null){long at=player.getTime();if(at>=0&&(resumeAt==0||player.isPlaying())){prefs.edit().putInt("lastIndex",index).putLong("lastPosition",at).apply();WatchHistory.update(this,source.id,title,index,at);}}lastSave=System.currentTimeMillis();}
     @Override protected void onStart(){super.onStart();foreground=true;if(vlc!=null&&player==null&&!resolving)loadEpisode();}
     @Override protected void onStop(){savePosition();if(player!=null&&(player.getTime()>0||resumeAt==0))resumeAt=Math.max(0,player.getTime());foreground=false;generation++;resolving=false;clearBrowser();if(root!=null)clearPlayer();super.onStop();}
-    @Override protected void onDestroy(){ui.removeCallbacksAndMessages(null);worker.shutdownNow();if(vlc!=null){vlc.release();vlc=null;}super.onDestroy();}
+    @Override protected void onDestroy(){destroyed=true;pendingAddress=null;ui.removeCallbacksAndMessages(null);worker.shutdownNow();releaseVlcWhenIdle();super.onDestroy();}
     @Override public boolean onKeyDown(int key,KeyEvent event){
         if(key==KeyEvent.KEYCODE_MENU||key==KeyEvent.KEYCODE_DPAD_CENTER||key==KeyEvent.KEYCODE_ENTER){if(controls!=null&&controls.getVisibility()!=View.VISIBLE){showControls(true);return true;}if(key==KeyEvent.KEYCODE_MENU){showControls(true);return true;}}
         if(controls!=null&&controls.getVisibility()!=View.VISIBLE&&(key==KeyEvent.KEYCODE_DPAD_LEFT||key==KeyEvent.KEYCODE_DPAD_RIGHT)){if(player!=null)player.setTime(Math.max(0,player.getTime()+(key==KeyEvent.KEYCODE_DPAD_RIGHT?10000:-10000)));return true;}

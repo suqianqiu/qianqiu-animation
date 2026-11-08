@@ -17,7 +17,9 @@ public final class AnimeCatalog {
         }
         public char letter(){char c=initials.charAt(0);return c>='a'&&c<='z'?Character.toUpperCase(c):'#';}
         public boolean matches(String text){
-            String key=normalize(text);
+            return matchesNormalized(normalize(text));
+        }
+        private boolean matchesNormalized(String key){
             for(String value:keys)if(value.contains(key))return true;
             return false;
         }
@@ -28,7 +30,8 @@ public final class AnimeCatalog {
     }
     public static ArrayList<Entry> filter(List<Entry> all,String text,char letter){
         ArrayList<Entry> result=new ArrayList<Entry>();
-        for(Entry entry:all)if((letter=='*'||entry.letter()==letter)&&entry.matches(text))result.add(entry);
+        String key=normalize(text);
+        for(Entry entry:all)if((letter=='*'||entry.letter()==letter)&&entry.matchesNormalized(key))result.add(entry);
         return result;
     }
     private static ArrayList<Entry> cached;

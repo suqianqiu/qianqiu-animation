@@ -25,8 +25,9 @@ public final class Sources {
         public String agent() { String a=rule.optString("userAgent"); return a.isEmpty()?UA:a; }
     }
     public static final class Item {
-        public final String name, url;
-        public Item(String name, String url) { this.name=name; this.url=url; }
+        public final String name, url,cover;
+        public Item(String name, String url) { this(name,url,""); }
+        public Item(String name,String url,String cover){this.name=name;this.url=url;this.cover=cover;}
     }
     public static final class Road {
         public final String name;
@@ -112,9 +113,21 @@ public final class Sources {
             String name=names.item(0).getTextContent().replaceAll("\\s+"," ").trim(),href=attr(urls.item(0),"href");
             if(name.isEmpty()||href.isEmpty())continue;
             String address=absolute(source.base(),href);
-            if(!LinkHealth.isBlocked(address)&&seen.add(address))result.add(new Item(name+(MediaLabels.mandarin(list.item(i).getTextContent())&&!MediaLabels.mandarin(name)?"（国语）":""),address));
+            String cover="";NodeList images=nodes(list.item(i),".//img");
+            for(int j=0;j<images.getLength()&&cover.isEmpty();j++)for(String attribute:new String[]{"data-original","data-src","data-lazy-src","src"}){
+                String image=attr(images.item(j),attribute);if(image.isEmpty()||image.startsWith("data:"))continue;
+                try{String candidate=absolute(source.base(),image);if(!MediaGuard.blocked(candidate)&&!candidate.matches("(?i).*(?:load(?:ing)?|blank|spacer)\\.(?:gif|png)(?:[?#].*)?$")){cover=candidate;break;}}catch(Exception ignored){}
+            }
+            if(!LinkHealth.isBlocked(address)&&seen.add(address))result.add(new Item(name+(MediaLabels.mandarin(list.item(i).getTextContent())&&!MediaLabels.mandarin(name)?"（国语）":""),address,cover));
         }
         return result;
+    }
+    static String poster(Source source,String title)throws Exception{
+        String term=LinkHealth.searchTerm(title,source.id);ArrayList<Item> found=search(source,term);
+        AnimeCatalog.Entry expected=AnimeCatalog.identify(title);
+        for(Item item:found)if(!item.cover.isEmpty()&&expected!=null&&expected.exact(item.name))return item.cover;
+        for(Item item:found)if(!item.cover.isEmpty()&&expected!=null){String name=AnimeCatalog.normalize(item.name);for(String alias:AnimeCatalog.searchNames(title))if(alias.length()>=2&&name.startsWith(AnimeCatalog.normalize(alias)))return item.cover;}
+        return "";
     }
     public static ArrayList<Road> chapters(Source source,String address) throws Exception {return parseChapters(source,fetch(source,address));}
     public static ArrayList<Road> parseChapters(Source source,String raw) throws Exception {

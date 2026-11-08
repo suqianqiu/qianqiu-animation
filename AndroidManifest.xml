@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.qianq.kandongman" android:versionCode="7" android:versionName="1.5.0">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.qianq.kandongman" android:versionCode="13" android:versionName="1.6.4">
     <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="28" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -7,7 +7,7 @@
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <application android:label="千秋动画" android:icon="@drawable/icon" android:banner="@drawable/banner" android:allowBackup="false" android:usesCleartextTraffic="true" android:hardwareAccelerated="true" android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" android:exported="true" android:screenOrientation="landscape" android:configChanges="orientation|screenSize|keyboardHidden">
+        <activity android:name=".MainActivity" android:exported="true" android:screenOrientation="landscape" android:windowSoftInputMode="stateAlwaysHidden|adjustResize" android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/><category android:name="android.intent.category.LEANBACK_LAUNCHER"/></intent-filter>
         </activity>
         <activity android:name=".PlayerActivity" android:exported="false" android:screenOrientation="landscape" android:configChanges="orientation|screenSize|keyboardHidden" />
