@@ -11,6 +11,7 @@ import android.widget.*;
 import org.json.*;
 import org.videolan.libvlc.*;
 import org.videolan.libvlc.interfaces.IVLCVout;
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -24,6 +25,8 @@ public final class PlayerActivity extends Activity {
     private String pendingAddress;
     private ArrayList<String> names,urls;
     private String title,mediaUrl="",resolvedUrl="";
+    private File filteredManifest;
+    private HlsAdFilter.Result filteredTimeline;
     private String browserCandidate="";private int browserCandidateCount;
     private Sources.Source source;
     private LibVLC vlc;
@@ -42,6 +45,7 @@ public final class PlayerActivity extends Activity {
     private int index,mode,generation;
     private long resumeAt,lastSave;
     private boolean foreground,resolving,softRetry,seenVideo,seeking;
+    private boolean controlsOpenedFromFullscreen;
     private final String[] modes={"自动：优先硬解，失败后重试软解","仅硬解","仅软解"};
     private final Runnable tick=new Runnable(){public void run(){
         if(player!=null&&foreground){
@@ -92,7 +96,7 @@ public final class PlayerActivity extends Activity {
         button(row,"下一集",new Runnable(){public void run(){step(1);}});
         button(row,"选集",new Runnable(){public void run(){selectEpisode();}});
         button(row,"解码",new Runnable(){public void run(){decoder();}});
-        button(row,"重试",new Runnable(){public void run(){resumeAt=player==null?resumeAt:Math.max(0,player.getTime());loadEpisode();}});
+        button(row,"重试",new Runnable(){public void run(){resumeAt=player==null?resumeAt:originalTime(player.getTime());loadEpisode();}});
         button(row,"缓存下载",new Runnable(){public void run(){requestDownload();}});
         button(row,"下载管理",new Runnable(){public void run(){startActivity(new Intent(PlayerActivity.this,DownloadsActivity.class));}});
         button(row,"收起",new Runnable(){public void run(){showControls(false);}});
@@ -101,7 +105,7 @@ public final class PlayerActivity extends Activity {
     private Button button(LinearLayout row,String title,final Runnable action){Button b=new Button(this);b.setText(title);b.setTextSize(16);TvStyle.button(b);b.setOnClickListener(new View.OnClickListener(){public void onClick(View v){action.run();}});LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(48),1);lp.setMargins(dp(3),0,dp(3),0);row.addView(b,lp);return b;}
     private String clock(long millis){long secs=Math.max(0,millis/1000);return String.format(java.util.Locale.US,"%02d:%02d",secs/60,secs%60);}
     private void status(String text){if(message!=null)message.setText(title+" · "+names.get(index)+"\n"+text);}
-    private void showControls(boolean show){controls.setVisibility(show?View.VISIBLE:View.GONE);message.setVisibility(show?View.VISIBLE:View.GONE);if(show)pause.requestFocus();else{root.setFocusableInTouchMode(true);root.requestFocus();}}
+    private void showControls(boolean show){controlsOpenedFromFullscreen=false;controls.setVisibility(show?View.VISIBLE:View.GONE);message.setVisibility(show?View.VISIBLE:View.GONE);if(show)pause.requestFocus();else{root.setFocusableInTouchMode(true);root.requestFocus();}}
     private void clearBrowser(){if(browser!=null){root.removeView(browser);browser.stopLoading();browser.loadUrl("about:blank");browser.destroy();browser=null;}}
     private void clearPlayer(){
         pendingAddress=null;cover.setVisibility(View.VISIBLE);
@@ -128,7 +132,7 @@ public final class PlayerActivity extends Activity {
     }
     private void loadEpisode() {
         if(!foreground||vlc==null)return;
-        final int token=++generation;clearBrowser();clearPlayer();resolving=true;mediaUrl="";resolvedUrl="";browserCandidate="";browserCandidateCount=0;seek.setProgress(0);status("正在解析 · "+source.name);showControls(true);saveHistory();
+        final int token=++generation;clearBrowser();clearPlayer();clearFilteredManifest();resolving=true;mediaUrl="";resolvedUrl="";browserCandidate="";browserCandidateCount=0;seek.setProgress(0);status("正在解析 · "+source.name);showControls(true);saveHistory();
         final String page=urls.get(index);
         final DownloadStore.Task existing=DownloadStore.get(this).find(source.id,page);
         if(existing!=null&&(existing.complete()||cacheOnly!=null)){
@@ -136,7 +140,7 @@ public final class PlayerActivity extends Activity {
             resolving=false;beginMedia(existing.address,false);return;
         }
         worker.execute(new Runnable(){public void run(){
-            try {final String found=Sources.resolve(source,page);ui.post(new Runnable(){public void run(){if(!active(token))return;if(found!=null){resolving=false;beginMedia(found,false);}else resolveInBrowser(page,token);}});}
+            try {DownloadStore.get(PlayerActivity.this).adFilter().check(page);final String found=Sources.resolve(source,page);ui.post(new Runnable(){public void run(){if(!active(token))return;if(found!=null){resolving=false;beginMedia(found,false);}else resolveInBrowser(page,token);}});}
             catch(final Exception error){ui.post(new Runnable(){public void run(){if(!active(token))return;resolving=false;status("解析失败："+error.getMessage()+"；返回换线路或点击重试。");}});}
         }});
         ui.postDelayed(new Runnable(){public void run(){if(active(token)&&resolving){generation++;resolving=false;clearBrowser();status("解析超时，请返回选择其他线路或来源。");showControls(true);}}},45000);
@@ -177,14 +181,70 @@ public final class PlayerActivity extends Activity {
         if(software||address.startsWith("file:")||(!DownloadService.base.isEmpty()&&address.startsWith(DownloadService.base))){playMedia(address,software);return;}
         try{MediaGuard.check(address);}catch(Exception e){status(e.getMessage());return;}
         resolvedUrl=address;
-        final DownloadStore.Task existing=DownloadStore.get(this).find(source.id,urls.get(index));
-        if(existing!=null&&existing.complete()){cacheTask=existing;playMedia(Uri.fromFile(new java.io.File(existing.entry())).toString(),software);return;}
-        if(cacheOnly!=null&&existing!=null&&existing.hls){
-            if(existing.paused){status("缓存已暂停，请到下载管理继续");return;}
-            DownloadService.start(this);final int token=++generation;worker.execute(new Runnable(){public void run(){try{final String local=DownloadService.url(existing);ui.post(new Runnable(){public void run(){if(active(token))playMedia(local,software);}});}catch(final Exception e){ui.post(new Runnable(){public void run(){if(active(token))status(e.getMessage());}});}}});return;
+        final DownloadStore store = DownloadStore.get(this);
+        final String page = urls.get(index);
+        final String agent = source.agent();
+        final String referer = source.rule.optString("referer", "").isEmpty()
+                ? page : source.rule.optString("referer");
+        final DownloadStore.Task existing = store.find(source.id, page);
+        final boolean local = existing != null && existing.complete();
+        final boolean partial = !local && cacheOnly != null && existing != null && existing.hls;
+        if (partial && existing.paused) {
+            status("缓存已暂停，请到下载管理继续");
+            return;
         }
-        // Ordinary playback uses only the player's memory buffer; never creates a disk task.
-        playMedia(address,software);
+        if (partial) DownloadService.start(this);
+        final int token = generation;
+        resolving = true;
+        status("正在检查已知广告");
+        worker.execute(new Runnable() { @Override public void run() {
+            File manifest = null;
+            try {
+                String playback = local ? Uri.fromFile(new File(existing.entry())).toString()
+                        : partial ? DownloadService.url(existing) : address;
+                HlsAdFilter.Result filtered = local || partial
+                        ? store.inspectCachedAds(existing, playback, local)
+                        : store.inspectAds(address, page, agent, referer);
+                if (filtered != null && filtered.playlist != null) {
+                    manifest = File.createTempFile("filtered-", ".m3u8", getCacheDir());
+                    DownloadStore.write(manifest, filtered.playlist);
+                    playback = Uri.fromFile(manifest).toString();
+                }
+                final File ready = manifest;
+                final String readyAddress = playback;
+                ui.post(new Runnable() { @Override public void run() {
+                    if (!active(token)) {
+                        if (ready != null) ready.delete();
+                        return;
+                    }
+                    resolving = false;
+                    clearFilteredManifest();
+                    filteredManifest = ready;
+                    filteredTimeline = filtered;
+                    if (local) cacheTask = existing;
+                    if (filtered != null) {
+                        android.util.Log.i("KanDongman", "ad-filter removed " + filtered.cuts.length / 2 + " ranges");
+                    }
+                    playMedia(readyAddress, software);
+                }});
+            } catch (Exception error) {
+                if (manifest != null) manifest.delete();
+                ui.post(new Runnable() { @Override public void run() {
+                    if (!active(token)) return;
+                    resolving = false;
+                    status(error.getMessage() == null ? "检查播放清单失败，请重试或换线路" : error.getMessage());
+                    showControls(true);
+                }});
+            }
+        }});
+    }
+    private void clearFilteredManifest() {
+        if (filteredManifest != null) filteredManifest.delete();
+        filteredManifest = null;
+        filteredTimeline = null;
+    }
+    private long originalTime(long playback) {
+        return Math.max(0, filteredTimeline == null ? playback : filteredTimeline.toOriginal(playback));
     }
     private void requestDownload(){
         final Sources.Source chosen=source;final String page=urls.get(index),name=names.get(index),series=title,address=resolvedUrl;
@@ -219,7 +279,12 @@ public final class PlayerActivity extends Activity {
                     case MediaPlayer.Event.Buffering:if(event.getBuffering()<100)status("缓冲 "+(int)event.getBuffering()+"%");break;
                     case MediaPlayer.Event.Playing:
                         status("正在播放 · 确定键打开控制栏，下载管理可查看本地缓存");
-                        if(resumeAt>0){player.setTime(resumeAt);resumeAt=0;}
+                        if(resumeAt>0){
+                            long position = filteredTimeline == null ? resumeAt : filteredTimeline.toPlayback(resumeAt);
+                            long length = player.getLength();
+                            player.setTime(length > 0 ? Math.min(position, Math.max(0, length - 1000)) : position);
+                            resumeAt=0;
+                        }
                         ui.postDelayed(new Runnable(){public void run(){if(active(token)&&player!=null&&player.isPlaying()&&!seeking)showControls(false);}},8000);break;
                     case MediaPlayer.Event.Vout:if(event.getVoutCount()>0){seenVideo=true;cover.setVisibility(View.GONE);android.util.Log.i("KanDongman","video-output ready");}break;
                     case MediaPlayer.Event.EncounteredError:failed(token);break;
@@ -235,14 +300,32 @@ public final class PlayerActivity extends Activity {
     private void failed(final int token){ui.post(new Runnable(){public void run(){if(!active(token))return;if(mode==0&&!softRetry)beginMedia(mediaUrl,true);else{clearPlayer();status("这条线路暂时无法播放，请返回换线路或来源。");showControls(true);}}});}
     private void step(int direction){if(index+direction<0||index+direction>=urls.size()){Toast.makeText(this,direction>0?"已经是最后一集":"已经是第一集",Toast.LENGTH_SHORT).show();return;}savePosition();index+=direction;resumeAt=0;loadEpisode();}
     private void selectEpisode(){AlertDialog dialog=new AlertDialog.Builder(this).setTitle("选择剧集").setSingleChoiceItems(names.toArray(new String[0]),index,new DialogInterface.OnClickListener(){public void onClick(DialogInterface d,int which){d.dismiss();savePosition();index=which;resumeAt=0;loadEpisode();}}).setNegativeButton("返回",null).show();TvStyle.dialog(dialog);}
-    private void decoder(){AlertDialog dialog=new AlertDialog.Builder(this).setTitle("解码方式").setSingleChoiceItems(modes,mode,new DialogInterface.OnClickListener(){public void onClick(DialogInterface d,int which){d.dismiss();mode=which;prefs.edit().putInt("mode",mode).apply();resumeAt=player==null?resumeAt:Math.max(0,player.getTime());if(!mediaUrl.isEmpty())beginMedia(mediaUrl,false);}}).setNegativeButton("返回",null).show();TvStyle.dialog(dialog);}
+    private void decoder(){AlertDialog dialog=new AlertDialog.Builder(this).setTitle("解码方式").setSingleChoiceItems(modes,mode,new DialogInterface.OnClickListener(){public void onClick(DialogInterface d,int which){d.dismiss();mode=which;prefs.edit().putInt("mode",mode).apply();resumeAt=player==null?resumeAt:originalTime(player.getTime());if(!mediaUrl.isEmpty())playMedia(mediaUrl,false);}}).setNegativeButton("返回",null).show();TvStyle.dialog(dialog);}
     private void saveHistory(){if(cacheOnly!=null)return;try{JSONObject h=new JSONObject();h.put("title",title);h.put("source",source.id);h.put("names",new JSONArray(names));h.put("urls",new JSONArray(urls));prefs.edit().putString("history",h.toString()).putInt("lastIndex",index).putLong("lastPosition",resumeAt).apply();WatchHistory.save(this,h,index,resumeAt);}catch(Exception ignored){}}
-    private void savePosition(){if(cacheOnly!=null){if(player!=null&&player.getTime()>=0)prefs.edit().putLong("cachePosition/"+cacheOnly,player.getTime()).apply();lastSave=System.currentTimeMillis();return;}if(player!=null){long at=player.getTime();if(at>=0&&(resumeAt==0||player.isPlaying())){prefs.edit().putInt("lastIndex",index).putLong("lastPosition",at).apply();WatchHistory.update(this,source.id,title,index,at);}}lastSave=System.currentTimeMillis();}
+    private void savePosition(){if(cacheOnly!=null){if(player!=null&&player.getTime()>=0)prefs.edit().putLong("cachePosition/"+cacheOnly,originalTime(player.getTime())).apply();lastSave=System.currentTimeMillis();return;}if(player!=null){long at=player.getTime();if(at>=0&&(resumeAt==0||player.isPlaying())){at=originalTime(at);prefs.edit().putInt("lastIndex",index).putLong("lastPosition",at).apply();WatchHistory.update(this,source.id,title,index,at);}}lastSave=System.currentTimeMillis();}
     @Override protected void onStart(){super.onStart();foreground=true;if(vlc!=null&&player==null&&!resolving)loadEpisode();}
-    @Override protected void onStop(){savePosition();if(player!=null&&(player.getTime()>0||resumeAt==0))resumeAt=Math.max(0,player.getTime());foreground=false;generation++;resolving=false;clearBrowser();if(root!=null)clearPlayer();super.onStop();}
+    @Override protected void onStop(){savePosition();if(player!=null&&(player.getTime()>0||resumeAt==0))resumeAt=originalTime(player.getTime());foreground=false;generation++;resolving=false;clearBrowser();if(root!=null)clearPlayer();clearFilteredManifest();super.onStop();}
     @Override protected void onDestroy(){destroyed=true;pendingAddress=null;ui.removeCallbacksAndMessages(null);worker.shutdownNow();releaseVlcWhenIdle();super.onDestroy();}
+    @Override public void onBackPressed() {
+        if (controlsOpenedFromFullscreen && controls.getVisibility() == View.VISIBLE) {
+            showControls(false);
+            return;
+        }
+        super.onBackPressed();
+    }
     @Override public boolean onKeyDown(int key,KeyEvent event){
-        if(key==KeyEvent.KEYCODE_MENU||key==KeyEvent.KEYCODE_DPAD_CENTER||key==KeyEvent.KEYCODE_ENTER){if(controls!=null&&controls.getVisibility()!=View.VISIBLE){showControls(true);return true;}if(key==KeyEvent.KEYCODE_MENU){showControls(true);return true;}}
+        if (controls != null && (key == KeyEvent.KEYCODE_MENU
+                || key == KeyEvent.KEYCODE_DPAD_CENTER || key == KeyEvent.KEYCODE_ENTER)) {
+            if (controls.getVisibility() != View.VISIBLE) {
+                showControls(true);
+                controlsOpenedFromFullscreen = player != null && seenVideo;
+                return true;
+            }
+            if (key == KeyEvent.KEYCODE_MENU) {
+                pause.requestFocus();
+                return true;
+            }
+        }
         if(controls!=null&&controls.getVisibility()!=View.VISIBLE&&(key==KeyEvent.KEYCODE_DPAD_LEFT||key==KeyEvent.KEYCODE_DPAD_RIGHT)){if(player!=null)player.setTime(Math.max(0,player.getTime()+(key==KeyEvent.KEYCODE_DPAD_RIGHT?10000:-10000)));return true;}
         return super.onKeyDown(key,event);
     }

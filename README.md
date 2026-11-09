@@ -6,9 +6,23 @@
 >
 > 第三方网页、播放地址及评分数据可能变化；不保证全部内容可播放、长期可用或兼容所有电视。安装、网络调试和自行配置应由设备所有者了解后操作。本声明不免除任何依法应承担的责任。如发现权利或安全问题，请通过本仓库 Issues 提供具体链接和说明，以便核查处理。
 
-适合遥控器操作的 Android 动漫目录与播放器。当前发布 **1.6.4**，包名 `com.qianq.kandongman`。最低声明为 Android 5.0；1.6.4 海报打开与输入回归在 **AM9 PRO / Android 14** 验证；微鲸 Android 5.0.2 已验证至 1.6.3，尚未复测 1.6.4。
+适合遥控器操作的 Android 动漫目录与播放器。当前发布 **1.6.6**，包名 `com.qianq.kandongman`。最低声明为 Android 5.0。
 
 [下载 APK 与完整源码](https://github.com/suqianqiu/qianqiu-animation/releases/latest) · [安装指南](INSTALL.md) · [验证记录](VERIFICATION.txt) · [第三方说明](THIRD_PARTY.txt)
+
+## 1.6.6 更新
+
+- **遥控器返回**。在全屏播放中打开控制栏后，第一次按 Back 收起控制栏，保留播放或暂停状态。再按一次 Back 返回上一页。
+- **过滤已知 HLS 插播**。延续 1.6.5 的通用播放规则，按已复核分片地址或完整指纹匹配。20 个已知广告分片指纹可跨作品复用，新建 HLS 下载也使用过滤后的清单。
+- **硬嵌广告线路提示换线**。已确认的 6 条线路会在播放前被屏蔽，避免为了去掉画面里的广告字样而删掉剧情。
+
+### 拦截广告示意
+
+![千秋动画已知插播拦截示意，广告画面加红叉](docs/screenshots/ad-block-1.6.6.png)
+
+根据取证时的广告帧制作，红叉是说明页标注。识别范围为已确认的广告样本，重新编码或新出现的广告可能需要复核。硬嵌广告处理以换线为主。
+
+1.6.6 正式 APK 在 Android 11 模拟器通过 11 项实播和遥控检查。1.6.5 的广告过滤另在微鲸 Android 5.0.2 实机验证了跨过已剔除插播和拦下硬嵌广告线路。详见 [验证记录](VERIFICATION.txt)。
 
 ## 1.6.4 更新
 
@@ -48,7 +62,7 @@
 
 ## 下载、安装与遥控器操作
 
-[1.6.4 APK](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.4/QianqiuAnimation-1.6.4.apk) · [完整源码 ZIP](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.4/QianqiuAnimation-1.6.4-source.zip) · [SHA-256 校验](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.4/SHA256SUMS.txt)
+[1.6.6 APK](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.6/QianqiuAnimation-1.6.6.apk) · [完整源码 ZIP](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.6/QianqiuAnimation-1.6.6-source.zip) · [SHA-256 校验](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.6/SHA256SUMS.txt)
 
 APK包含32位ARM库，支持运行32位应用的ARM设备；不包含x86或ARM64原生库。安装步骤、U盘方法、网络ADB与可复制给电脑AI的安装提示词见[安装指南](INSTALL.md)。需要设备允许安装外部APK；无需电脑服务常驻。
 
@@ -85,7 +99,7 @@ pwsh -File tools/fetch-deps.ps1
 pwsh -File build.ps1
 ```
 
-输出 `dist/KanDongman-1.6.4.apk`。依赖从Maven Central获取并核对SHA-256；完整源码ZIP包含原始AAR、库源码和依赖。构建会创建自己的本地签名文件，发布者私钥不随源码提供；不同签名不能覆盖安装发布版。
+输出 `dist/KanDongman-1.6.6.apk`。依赖从Maven Central获取并核对SHA-256；完整源码ZIP包含原始AAR、库源码和依赖。构建会创建自己的本地签名文件，发布者私钥不随源码提供；不同签名不能覆盖安装发布版。
 
 ## 来源与许可
 

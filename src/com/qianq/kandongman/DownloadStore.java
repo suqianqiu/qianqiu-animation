@@ -17,11 +17,15 @@ final class DownloadStore {
         boolean hls,background,manual;
         volatile long bytes,speed,inflight;
         long lastBytes,lastTick;
+        long[] adCuts = new long[0];
         final ArrayList<String> resources=new ArrayList<String>();
         final ArrayList<Object> locks=new ArrayList<Object>();
         File directory;
         synchronized JSONObject json()throws Exception{
-            JSONObject j=new JSONObject();j.put("id",id).put("title",title).put("episode",episode).put("page",page).put("source",source).put("address",address).put("agent",agent).put("referer",referer).put("state",state).put("error",error).put("paused",paused).put("manual",manual).put("background",background).put("hls",hls).put("playlist",playlist).put("resources",new JSONArray(resources));return j;
+            JSONObject j=new JSONObject();j.put("id",id).put("title",title).put("episode",episode).put("page",page).put("source",source).put("address",address).put("agent",agent).put("referer",referer).put("state",state).put("error",error).put("paused",paused).put("manual",manual).put("background",background).put("hls",hls).put("playlist",playlist).put("resources",new JSONArray(resources));
+            JSONArray cuts = new JSONArray();
+            for (long cut : adCuts) cuts.put(cut);
+            return j.put("adCuts", cuts);
         }
         int done(){int n=0;for(int i=0;i<resources.size();i++)if(new File(directory,"r"+i).isFile())n++;return n;}
         boolean complete(){return !resources.isEmpty()&&done()==resources.size();}
@@ -30,13 +34,60 @@ final class DownloadStore {
     private static DownloadStore instance;
     static synchronized DownloadStore get(Context c){if(instance==null)instance=new DownloadStore(c.getApplicationContext());return instance;}
     final Context context;
+    private HlsAdFilter adFilter;
     private final File root;
     private final LinkedHashMap<String,Task> tasks=new LinkedHashMap<String,Task>();
     private final ExecutorService queue=Executors.newSingleThreadExecutor();
     private DownloadStore(Context c){context=c;root=new File(c.getFilesDir(),"downloads");root.mkdirs();try{CompatTls.initialize(c);}catch(Exception ignored){}
         File[] dirs=root.listFiles();if(dirs!=null)for(File d:dirs)try{
             JSONObject j=new JSONObject(read(new File(d,"task.json")));Task t=new Task();t.directory=d;t.id=j.getString("id");t.title=j.getString("title");t.episode=j.getString("episode");t.page=j.getString("page");t.source=j.getString("source");t.address=j.getString("address");t.agent=j.getString("agent");t.referer=j.getString("referer");t.hls=j.getBoolean("hls");t.background=j.optBoolean("background",false);t.manual=j.optBoolean("manual",false);t.playlist=j.optString("playlist");t.paused=j.optBoolean("paused");JSONArray a=j.getJSONArray("resources");for(int i=0;i<a.length();i++){t.resources.add(a.getString(i));t.locks.add(new Object());}if(!t.manual&&!t.complete())t.paused=true;t.bytes=size(d);t.state=t.complete()?"已完成":t.paused?"已暂停":"等待继续";tasks.put(t.id,t);
+            JSONArray cuts = j.optJSONArray("adCuts");
+            if (cuts != null && cuts.length() % 2 == 0) {
+                t.adCuts = new long[cuts.length()];
+                for (int i = 0; i < t.adCuts.length; i++) t.adCuts[i] = cuts.getLong(i);
+            }
         }catch(Exception ignored){}
+    }
+    synchronized HlsAdFilter adFilter() throws IOException {
+        if (adFilter == null) adFilter = HlsAdFilter.read(context.getAssets().open("known-hls-ads.tsv"));
+        return adFilter;
+    }
+    HlsAdFilter.Result inspectAds(String address, String page, String agent, String referer) throws Exception {
+        HlsAdFilter filter = adFilter();
+        filter.check(page);
+        filter.check(address);
+        if (!address.toLowerCase(Locale.US).contains(".m3u8")) return null;
+        final long[] deadline = {0};
+        return filter.online(address, new HlsCache.Fetch() {
+            @Override public String get(String url) throws Exception { return fetchText(url, agent, referer); }
+        }, new HlsAdFilter.Digest() {
+            @Override public String get(String url) throws Exception {
+                if (deadline[0] == 0) deadline[0] = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+                if (System.nanoTime() >= deadline[0]) return "";
+                HttpURLConnection c = open(url, agent, referer, 1600, 1600);
+                try (InputStream in = c.getInputStream()) { return HlsAdFilter.sha256(in, deadline[0]); }
+                finally { c.disconnect(); }
+            }
+        });
+    }
+    HlsAdFilter.Result inspectCachedAds(Task task, String playbackAddress, boolean local) throws Exception {
+        HlsAdFilter filter = adFilter();
+        filter.check(task.page);
+        filter.check(task.address);
+        if (!task.hls) return null;
+        if (task.adCuts.length > 0) return new HlsAdFilter.Result(null, task.adCuts);
+        return filter.filter(task.playlist, new HlsAdFilter.Reference() {
+            @Override public String get(String name) {
+                if (!name.matches("r[0-9]+")) return "";
+                int resource = Integer.parseInt(name.substring(1));
+                return resource < task.resources.size() ? task.resources.get(resource) : "";
+            }
+        }, new HlsAdFilter.Reference() {
+            @Override public String get(String name) throws Exception {
+                return local ? new File(task.directory, name).toURI().toASCIIString()
+                        : new URL(new URL(playbackAddress), name).toString();
+            }
+        }, null);
     }
     static String id(String source,String page)throws Exception{byte[] b=MessageDigest.getInstance("SHA-256").digest((source+"\n"+page).getBytes("UTF-8"));StringBuilder s=new StringBuilder();for(byte v:b)s.append(String.format(Locale.US,"%02x",v&255));return s.toString();}
     synchronized ArrayList<Task> list(){return new ArrayList<Task>(tasks.values());}
@@ -44,13 +95,26 @@ final class DownloadStore {
     Task find(String source,String page){try{return find(id(source,page));}catch(Exception e){return null;}}
     private synchronized void save(Task t)throws Exception{if(!t.deleted)write(new File(t.directory,"task.json"),t.json().toString());}
     Task prepare(final Sources.Source source,final String page,String title,String episode,final String address)throws Exception{
+        adFilter().check(page);
+        adFilter().check(address);
         String key=id(source.id,page);Task old=find(key);if(old!=null&&!old.resources.isEmpty())return old;
         Task t=new Task();t.id=key;t.title=title;t.episode=episode;t.source=source.id;t.page=page;t.address=address;t.agent=source.agent();t.referer=source.rule.optString("referer").isEmpty()?page:source.rule.optString("referer");t.directory=new File(root,key);
         t.hls=address.toLowerCase(Locale.US).contains(".m3u8");
-        if(t.hls){HlsCache parsed=HlsCache.parse(address,new HlsCache.Fetch(){public String get(String url)throws Exception{return fetchText(url,source.agent(),source.rule.optString("referer").isEmpty()?page:source.rule.optString("referer"));}});t.resources.addAll(parsed.urls);t.playlist=parsed.playlist;}
+        if(t.hls){
+            final String referer = t.referer;
+            HlsAdFilter.Result filtered = inspectAds(address, page, source.agent(), referer);
+            HlsCache parsed = HlsCache.parse(address, new HlsCache.Fetch() {
+                @Override public String get(String url) throws Exception {
+                    return filtered != null ? filtered.playlist : fetchText(url, source.agent(), referer);
+                }
+            });
+            t.resources.addAll(parsed.urls);
+            t.playlist = parsed.playlist;
+            if (filtered != null) t.adCuts = filtered.cuts;
+        }
         else {if(!address.toLowerCase(Locale.US).matches(".*\\.(mp4|m4v|webm)([?#].*)?"))throw new IOException("此格式暂不支持本地缓存");t.resources.add(address);}
         for(int i=0;i<t.resources.size();i++)t.locks.add(new Object());
-        synchronized(this){old=tasks.get(key);if(old!=null&&!old.resources.isEmpty())return old;if(old!=null){old.address=t.address;old.agent=t.agent;old.referer=t.referer;old.hls=t.hls;old.playlist=t.playlist;old.resources.addAll(t.resources);old.locks.addAll(t.locks);t=old;}t.directory.mkdirs();if(t.hls)write(new File(t.directory,"index.m3u8"),t.playlist);tasks.put(key,t);save(t);}return t;
+        synchronized(this){old=tasks.get(key);if(old!=null&&!old.resources.isEmpty())return old;if(old!=null){old.address=t.address;old.agent=t.agent;old.referer=t.referer;old.hls=t.hls;old.playlist=t.playlist;old.adCuts=t.adCuts;old.resources.addAll(t.resources);old.locks.addAll(t.locks);t=old;}t.directory.mkdirs();if(t.hls)write(new File(t.directory,"index.m3u8"),t.playlist);tasks.put(key,t);save(t);}return t;
     }
     Task enqueueEpisode(Sources.Source source,String page,String title,String episode)throws Exception{
         Task t; synchronized(this){t=find(source.id,page);if(t==null){t=new Task();t.id=id(source.id,page);t.title=title;t.episode=episode;t.page=page;t.source=source.id;t.address="";t.agent=source.agent();t.referer=source.rule.optString("referer").isEmpty()?page:source.rule.optString("referer");t.directory=new File(root,t.id);t.directory.mkdirs();tasks.put(t.id,t);save(t);}}
@@ -58,7 +122,7 @@ final class DownloadStore {
     }
     synchronized void resumeAll(){for(Task t:list())if(t.manual&&t.background&&!t.paused&&!t.complete())enqueue(t);}
     synchronized void enqueue(final Task t){if(t.deleted||t.complete())return;if(t.running){if(t.paused){t.paused=false;queue.execute(new Runnable(){public void run(){enqueue(t);}});}return;}t.paused=false;t.manual=true;t.background=true;t.running=true;t.error="";t.state="等待下载";try{save(t);}catch(Exception ignored){}queue.execute(new Runnable(){public void run(){
-        try{if(t.resources.isEmpty()){t.state="正在解析播放地址";Sources.Source chosen=null;for(Sources.Source s:Sources.load(context))if(s.id.equals(t.source))chosen=s;if(chosen==null)throw new IOException("来源不存在");String resolved=Sources.resolve(chosen,t.page);if(resolved==null)throw new IOException("此线路需先进入播放页面解析，再重试下载");prepare(chosen,t.page,t.title,t.episode,resolved);}t.state="下载中";for(int i=0;i<t.resources.size();i++){if(t.paused||t.deleted)break;resource(t,i);}if(!t.paused&&!t.deleted){t.state="已完成";t.speed=0;}}
+        try{adFilter().check(t.page);adFilter().check(t.address);if(t.resources.isEmpty()){t.state="正在解析播放地址";Sources.Source chosen=null;for(Sources.Source s:Sources.load(context))if(s.id.equals(t.source))chosen=s;if(chosen==null)throw new IOException("来源不存在");String resolved=Sources.resolve(chosen,t.page);if(resolved==null)throw new IOException("此线路需先进入播放页面解析，再重试下载");prepare(chosen,t.page,t.title,t.episode,resolved);}t.state="下载中";for(int i=0;i<t.resources.size();i++){if(t.paused||t.deleted)break;resource(t,i);}if(!t.paused&&!t.deleted){t.state="已完成";t.speed=0;}}
         catch(Exception e){if(!t.paused&&!t.deleted){t.state="下载失败";t.error=e.getMessage()==null?e.getClass().getSimpleName():e.getMessage();}}
         finally{t.running=false;if(t.paused)t.state="已暂停";try{save(t);}catch(Exception ignored){}}
     }});}
@@ -88,9 +152,12 @@ final class DownloadStore {
         }
     }
     static HttpURLConnection open(String url,String agent,String referer)throws Exception{
+        return open(url, agent, referer, 10000, 15000);
+    }
+    private static HttpURLConnection open(String url,String agent,String referer,int connectTimeout,int readTimeout)throws Exception{
         for(int redirects=0;redirects<6;redirects++){
             MediaGuard.check(url);if(!Sources.http(url))throw new IOException("仅支持 HTTP/HTTPS");HttpURLConnection c=(HttpURLConnection)new URL(url).openConnection();if(c instanceof javax.net.ssl.HttpsURLConnection&&CompatTls.factory()!=null)((javax.net.ssl.HttpsURLConnection)c).setSSLSocketFactory(CompatTls.factory());
-            c.setConnectTimeout(10000);c.setReadTimeout(15000);c.setInstanceFollowRedirects(false);c.setRequestProperty("User-Agent",agent);c.setRequestProperty("Referer",referer);c.setRequestProperty("Accept-Encoding","identity");
+            c.setConnectTimeout(connectTimeout);c.setReadTimeout(readTimeout);c.setInstanceFollowRedirects(false);c.setRequestProperty("User-Agent",agent);c.setRequestProperty("Referer",referer);c.setRequestProperty("Accept-Encoding","identity");
             try{int code=c.getResponseCode();if(code>=300&&code<400){String next=HlsCache.absolute(url,c.getHeaderField("Location"));c.disconnect();url=next;continue;}if(code!=200)throw new IOException("HTTP "+code+"，可重试或换源");return c;}catch(Exception e){c.disconnect();throw e;}
         }throw new IOException("重定向过多");
     }
