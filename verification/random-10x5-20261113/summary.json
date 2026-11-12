@@ -1,0 +1,213 @@
+{
+  "date": "2026-11-13",
+  "version": "1.6.8",
+  "seed": 4289209857256020042,
+  "titles": [
+    {
+      "title": "BanG Dream",
+      "episodes": [
+        2,
+        8,
+        9,
+        10,
+        11
+      ],
+      "removed_segments": 90,
+      "removed_breaks": 15,
+      "remaining_promo_episodes": [
+        2,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "title": "灵能百分百",
+      "episodes": [
+        1,
+        5,
+        7,
+        11,
+        12
+      ],
+      "removed_segments": 81,
+      "removed_breaks": 14,
+      "remaining_promo_episodes": [
+        1,
+        5,
+        7,
+        11,
+        12
+      ]
+    },
+    {
+      "title": "我是大神仙",
+      "episodes": [
+        17,
+        18,
+        21,
+        24,
+        25
+      ],
+      "removed_segments": 45,
+      "removed_breaks": 10,
+      "remaining_promo_episodes": [
+        17,
+        18,
+        21,
+        24
+      ]
+    },
+    {
+      "title": "桃源暗鬼",
+      "episodes": [
+        1,
+        2,
+        6,
+        15,
+        16
+      ],
+      "removed_segments": 45,
+      "removed_breaks": 8,
+      "remaining_promo_episodes": [
+        2,
+        16
+      ]
+    },
+    {
+      "title": "葬送的芙莉莲",
+      "episodes": [
+        3,
+        13,
+        23,
+        24,
+        28
+      ],
+      "removed_segments": 81,
+      "removed_breaks": 14,
+      "remaining_promo_episodes": [
+        3,
+        13,
+        24,
+        28
+      ]
+    },
+    {
+      "title": "尼尔斯骑鹅旅行记",
+      "episodes": [
+        5,
+        8,
+        15,
+        26,
+        27
+      ],
+      "removed_segments": 65,
+      "removed_breaks": 15,
+      "remaining_promo_episodes": [
+        5,
+        15
+      ]
+    },
+    {
+      "title": "吞噬星空",
+      "episodes": [
+        36,
+        55,
+        129,
+        203,
+        205
+      ],
+      "removed_segments": 29,
+      "removed_breaks": 6,
+      "remaining_promo_episodes": [
+        129
+      ]
+    },
+    {
+      "title": "文豪野犬",
+      "episodes": [
+        4,
+        5,
+        6,
+        7,
+        11
+      ],
+      "removed_segments": 90,
+      "removed_breaks": 15,
+      "remaining_promo_episodes": [
+        4,
+        5,
+        6,
+        7,
+        11
+      ]
+    },
+    {
+      "title": "向山进发",
+      "episodes": [
+        1,
+        3,
+        4,
+        8,
+        12
+      ],
+      "removed_segments": 20,
+      "removed_breaks": 5,
+      "remaining_promo_episodes": []
+    },
+    {
+      "title": "凡人修仙传",
+      "episodes": [
+        18,
+        52,
+        54,
+        58,
+        72
+      ],
+      "removed_segments": 59,
+      "removed_breaks": 11,
+      "remaining_promo_episodes": [
+        18,
+        52,
+        58,
+        72
+      ]
+    }
+  ],
+  "episodes": 50,
+  "unique_decoded_segments": 796,
+  "unique_images": 570,
+  "sample_records": 1174,
+  "removed_segments": 605,
+  "removed_breaks": 113,
+  "decoded_plot_seams": 71,
+  "remaining_promo_episodes": 32,
+  "all_removed_bytes_previously_reviewed": true,
+  "retained_uri_order_unchanged": true,
+  "missing_frames": 0,
+  "unavailable_original_draw": {
+    "title": "龙珠改",
+    "episodes": [
+      7,
+      15,
+      69,
+      82,
+      97
+    ],
+    "reason": "Primary HLS unavailable; alternate MP4 returned 401. Replaced by next eligible randomized series 凡人修仙传 before reviewing its media."
+  },
+  "limitations": [
+    "Sampled frames, not exhaustive episode review.",
+    "MXdm title pages and multiple upstream CDNs; not 50 independent providers.",
+    "Offline replay with complete downloaded SHA digests; not a 50-episode real-TV deadline benchmark.",
+    "Burned-in gambling/promotional text remains. Official production logos, plot signage and end-card QR information are not automatically classified as malicious inserts."
+  ],
+  "tested_build": {
+    "version": "1.6.8",
+    "apk_sha256": "f2c2d1e8eece049fd8b43ae24e196f11186066cb19ccbda8ea3910ac9c678914",
+    "rules_sha256": "7d829c0e0a9c2a79f1648f398c55ffc2c3518db5652af2784a7ad38b90c139e9",
+    "rules_not_modified_for_random_sample": true,
+    "diagnostic_probes": "complete downloaded files; no simulated network deadline; not a TV playback performance benchmark"
+  }
+}

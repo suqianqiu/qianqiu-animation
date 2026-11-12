@@ -1,0 +1,1 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.qianq.kandongman.adtest"><uses-sdk android:minSdkVersion="21" android:targetSdkVersion="28"/><application android:label="Ad filter verification"/><instrumentation android:name="com.qianq.kandongman.AdIntegrationTest" android:targetPackage="com.qianq.kandongman"/></manifest>

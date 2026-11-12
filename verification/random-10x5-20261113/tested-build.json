@@ -1,0 +1,7 @@
+{
+  "version": "1.6.8",
+  "apk_sha256": "f2c2d1e8eece049fd8b43ae24e196f11186066cb19ccbda8ea3910ac9c678914",
+  "rules_sha256": "7d829c0e0a9c2a79f1648f398c55ffc2c3518db5652af2784a7ad38b90c139e9",
+  "rules_not_modified_for_random_sample": true,
+  "diagnostic_probes": "complete downloaded files; no simulated network deadline; not a TV playback performance benchmark"
+}

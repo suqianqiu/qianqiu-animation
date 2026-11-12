@@ -10,7 +10,13 @@ final class HlsAdFilter {
     static final class Blocked extends IOException {
         Blocked(String message) { super(message); }
     }
-    interface Digest { String get(String url) throws Exception; }
+    interface Digest {
+        String get(String url) throws Exception;
+        default void prefetch(List<String> urls) { }
+    }
+    static final class Incomplete extends IOException {
+        Incomplete(Exception cause) { super("已识别到广告候选，但分片校验未完成，请重试", cause); }
+    }
     interface Reference { String get(String value) throws Exception; }
     private static final class Sequence {
         final List<String> hashes = new ArrayList<>();
@@ -41,6 +47,21 @@ final class HlsAdFilter {
             }
             return original;
         }
+    }
+
+    /** Added cuts are measured on the already-filtered cache timeline. */
+    static Result combine(long[] previous, Result added) {
+        if(previous.length==0)return added;
+        if(added==null)return new Result(null,previous);
+        final Result prior=new Result(null,previous);
+        List<long[]> ranges=new ArrayList<>();
+        for(int i=0;i<previous.length;i+=2)ranges.add(new long[]{previous[i],previous[i+1]});
+        for(int i=0;i<added.cuts.length;i+=2)ranges.add(new long[]{prior.toOriginal(added.cuts[i]),prior.toOriginal(added.cuts[i+1])});
+        Collections.sort(ranges,new Comparator<long[]>(){public int compare(long[] a,long[] b){return Long.compare(a[0],b[0]);}});
+        List<Long> values=new ArrayList<>();long start=-1,end=-1;
+        for(long[] range:ranges){if(start<0){start=range[0];end=range[1];}else if(range[0]<=end)end=Math.max(end,range[1]);else{values.add(start);values.add(end);start=range[0];end=range[1];}}
+        if(start>=0){values.add(start);values.add(end);}long[] cuts=new long[values.size()];for(int i=0;i<cuts.length;i++)cuts[i]=values.get(i);
+        return new Result(added.playlist,cuts);
     }
 
     private final Set<String> blocked = new HashSet<>();
@@ -133,7 +154,11 @@ final class HlsAdFilter {
                 pending.info = line;
                 pending.duration = Math.round(1000 * Double.parseDouble(line.substring(8).split(",", 2)[0]));
             } else if (line.startsWith("#")) {
-                if (line.equals("#EXTM3U") || line.equals("#EXT-X-INDEPENDENT-SEGMENTS")
+                // METHOD=NONE is an explicit unencrypted state, not an unsupported cipher.
+                // A playlist containing an actual encrypted section remains unsupported below.
+                if (line.equals("#EXT-X-KEY:METHOD=NONE")) {
+                    continue;
+                } else if (line.equals("#EXTM3U") || line.equals("#EXT-X-INDEPENDENT-SEGMENTS")
                         || line.matches("#EXT-X-(VERSION|TARGETDURATION|MEDIA-SEQUENCE|PLAYLIST-TYPE|DISCONTINUITY-SEQUENCE):.*")) {
                     header.append(line).append('\n');
                 } else if (line.startsWith("#EXT")) supported = false;
@@ -156,12 +181,19 @@ final class HlsAdFilter {
 
         if (digest != null) {
             Map<String, String> checked = new HashMap<>();
-            for (int a = 0; a < media.size();) {
-                int b = a + 1;
-                while (b < media.size() && !media.get(b).cut) b++;
-                List<Segment> run = media.subList(a, b);
-                if (matches(run, digest, checked)) for (Segment segment : run) segment.remove = true;
-                a = b;
+            // Discontinuities can occur inside an ad or in ordinary content. Match a complete
+            // reviewed sequence anywhere; never remove a whole run just because it is short.
+            for (int a = 0; a < media.size(); a++) {
+                for (Sequence sequence : sequences) {
+                    int b = a + sequence.durations.size();
+                    if (b > media.size()) continue;
+                    List<Segment> candidate = media.subList(a, b);
+                    if (matches(candidate, sequence, digest, checked)) {
+                        for (Segment segment : candidate) segment.remove = true;
+                        a = b - 1;
+                        break;
+                    }
+                }
             }
         }
         StringBuilder result = new StringBuilder(header);
@@ -198,29 +230,34 @@ final class HlsAdFilter {
         return new Result(result.toString(), ranges);
     }
 
-    private boolean matches(List<Segment> run, Digest digest, Map<String, String> checked) {
-        for (Sequence sequence : sequences) {
-            if (run.size() != sequence.durations.size()) continue;
-            boolean same = true;
-            for (int i = 0; i < run.size(); i++) {
-                if (Math.abs(run.get(i).duration - sequence.durations.get(i)) > 1) { same = false; break; }
-            }
-            if (!same) continue;
-            for (int i = 0; i < run.size(); i++) {
-                String url = run.get(i).original;
-                String actual = segments.get(key(url));
-                if (actual == null) {
-                    if (!checked.containsKey(url)) {
-                        try { checked.put(url, digest.get(url)); }
-                        catch (Exception unavailable) { checked.put(url, ""); }
+    private boolean matches(List<Segment> run, Sequence sequence, Digest digest, Map<String, String> checked) throws IOException {
+        for (int i = 0; i < run.size(); i++)
+            if (Math.abs(run.get(i).duration - sequence.durations.get(i)) > 1) return false;
+        for (int i = 0; i < run.size(); i++) {
+            String url = run.get(i).original;
+            String actual = segments.get(key(url));
+            if (actual == null) {
+                if (!checked.containsKey(url)) {
+                    try { checked.put(url, digest.get(url)); }
+                    catch (Exception unavailable) {
+                        if (Thread.currentThread().isInterrupted()) throw new IOException("检查已取消", unavailable);
+                        if (i > 0) throw new Incomplete(unavailable);
+                        checked.put(url, "");
                     }
-                    actual = checked.get(url);
                 }
-                if (!sequence.hashes.get(i).equals(actual)) { same = false; break; }
+                actual = checked.get(url);
             }
-            if (same) return true;
+            if (!sequence.hashes.get(i).equals(actual)) return false;
+            if (i == 0) {
+                List<String> remaining = new ArrayList<>();
+                for (int j = 1; j < run.size(); j++) {
+                    String next = run.get(j).original;
+                    if (!segments.containsKey(key(next)) && !checked.containsKey(next)) remaining.add(next);
+                }
+                digest.prefetch(remaining);
+            }
         }
-        return false;
+        return true;
     }
 
     static String sha256(InputStream in, long deadline) throws Exception {

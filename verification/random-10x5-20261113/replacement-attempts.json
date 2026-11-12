@@ -1,0 +1,39 @@
+[
+  {
+    "title": "凡人修仙传",
+    "episodes": [
+      18,
+      52,
+      54,
+      58,
+      72
+    ],
+    "cases": [
+      {
+        "episode": 18,
+        "status": "resolved",
+        "route_id": "1d081cf4a7"
+      },
+      {
+        "episode": 52,
+        "status": "resolved",
+        "route_id": "92a67e4b31"
+      },
+      {
+        "episode": 54,
+        "status": "resolved",
+        "route_id": "d477400f87"
+      },
+      {
+        "episode": 58,
+        "status": "resolved",
+        "route_id": "040c5f6aa1"
+      },
+      {
+        "episode": 72,
+        "status": "resolved",
+        "route_id": "b0844ed8f7"
+      }
+    ]
+  }
+]

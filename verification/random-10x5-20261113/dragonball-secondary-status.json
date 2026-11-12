@@ -1,0 +1,35 @@
+[
+  {
+    "episode": 7,
+    "page": "https://dm1.xfdm.pro/watch/2404/1/7.html",
+    "error": "('Connection aborted.', ConnectionResetError(10054, '远程主机强迫关闭了一个现有的连接。', None, 10054, None))"
+  },
+  {
+    "episode": 15,
+    "page": "https://dm1.xfdm.pro/watch/2404/1/15.html",
+    "media": "https://play.xfvod.pro:8088/L/L-%E9%BE%99%E7%8F%A0%E7%B3%BB%E5%88%97/%E6%94%B9/015.mp4",
+    "status": 401,
+    "content_type": null
+  },
+  {
+    "episode": 69,
+    "page": "https://dm1.xfdm.pro/watch/2404/1/69.html",
+    "media": "https://play.xfvod.pro:8088/L/L-%E9%BE%99%E7%8F%A0%E7%B3%BB%E5%88%97/%E6%94%B9/069.mp4",
+    "status": 401,
+    "content_type": null
+  },
+  {
+    "episode": 82,
+    "page": "https://dm1.xfdm.pro/watch/2404/1/82.html",
+    "media": "https://play.xfvod.pro:8088/L/L-%E9%BE%99%E7%8F%A0%E7%B3%BB%E5%88%97/%E6%94%B9/082.mp4",
+    "status": 401,
+    "content_type": null
+  },
+  {
+    "episode": 97,
+    "page": "https://dm1.xfdm.pro/watch/2404/1/97.html",
+    "media": "https://play.xfvod.pro:8088/L/L-%E9%BE%99%E7%8F%A0%E7%B3%BB%E5%88%97/%E6%94%B9/097.mp4",
+    "status": 401,
+    "content_type": null
+  }
+]

@@ -57,26 +57,36 @@ final class DownloadStore {
         filter.check(page);
         filter.check(address);
         if (!address.toLowerCase(Locale.US).contains(".m3u8")) return null;
-        final long[] deadline = {0};
+        try(AdDigest probes=new AdDigest(new AdDigest.Fetch(){
+            public String hash(String url,long deadline)throws Exception {
+                HttpURLConnection c=open(url,agent,referer,2500,3500);
+                try(InputStream in=c.getInputStream()){return HlsAdFilter.sha256(in,deadline);}
+                finally{c.disconnect();}
+            }
+        })){
         return filter.online(address, new HlsCache.Fetch() {
             @Override public String get(String url) throws Exception { return fetchText(url, agent, referer); }
-        }, new HlsAdFilter.Digest() {
-            @Override public String get(String url) throws Exception {
-                if (deadline[0] == 0) deadline[0] = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
-                if (System.nanoTime() >= deadline[0]) return "";
-                HttpURLConnection c = open(url, agent, referer, 1600, 1600);
-                try (InputStream in = c.getInputStream()) { return HlsAdFilter.sha256(in, deadline[0]); }
-                finally { c.disconnect(); }
-            }
-        });
+        },probes);
+        }
     }
-    HlsAdFilter.Result inspectCachedAds(Task task, String playbackAddress, boolean local) throws Exception {
+    HlsAdFilter.Result inspectCachedAds(final Task task, String playbackAddress, final boolean local) throws Exception {
         HlsAdFilter filter = adFilter();
         filter.check(task.page);
         filter.check(task.address);
         if (!task.hls) return null;
-        if (task.adCuts.length > 0) return new HlsAdFilter.Result(null, task.adCuts);
-        return filter.filter(task.playlist, new HlsAdFilter.Reference() {
+        final Map<String,Integer> resources=new HashMap<>();
+        for(int i=0;i<task.resources.size();i++)resources.put(task.resources.get(i),i);
+        try(AdDigest probes=new AdDigest(new AdDigest.Fetch(){
+            public String hash(String url,long deadline)throws Exception {
+                Integer index=resources.get(url);if(index==null)throw new IOException("缓存分片索引不存在");
+                File file=new File(task.directory,"r"+index);
+                if(file.isFile())try(InputStream in=new FileInputStream(file)){return HlsAdFilter.sha256(in,deadline);}
+                if(local)throw new IOException("缓存分片尚未完成");
+                HttpURLConnection c=open(url,task.agent,task.referer,2500,3500);
+                try(InputStream in=c.getInputStream()){return HlsAdFilter.sha256(in,deadline);}finally{c.disconnect();}
+            }
+        })){
+        HlsAdFilter.Result added=filter.filter(task.playlist, new HlsAdFilter.Reference() {
             @Override public String get(String name) {
                 if (!name.matches("r[0-9]+")) return "";
                 int resource = Integer.parseInt(name.substring(1));
@@ -87,7 +97,9 @@ final class DownloadStore {
                 return local ? new File(task.directory, name).toURI().toASCIIString()
                         : new URL(new URL(playbackAddress), name).toString();
             }
-        }, null);
+        }, probes);
+        return HlsAdFilter.combine(task.adCuts,added);
+        }
     }
     static String id(String source,String page)throws Exception{byte[] b=MessageDigest.getInstance("SHA-256").digest((source+"\n"+page).getBytes("UTF-8"));StringBuilder s=new StringBuilder();for(byte v:b)s.append(String.format(Locale.US,"%02x",v&255));return s.toString();}
     synchronized ArrayList<Task> list(){return new ArrayList<Task>(tasks.values());}

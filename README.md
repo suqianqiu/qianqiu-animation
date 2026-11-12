@@ -6,9 +6,15 @@
 >
 > 第三方网页、播放地址及评分数据可能变化；不保证全部内容可播放、长期可用或兼容所有电视。安装、网络调试和自行配置应由设备所有者了解后操作。本声明不免除任何依法应承担的责任。如发现权利或安全问题，请通过本仓库 Issues 提供具体链接和说明，以便核查处理。
 
-适合遥控器操作的 Android 动漫目录与播放器。当前发布 **1.6.7**，包名 `com.qianq.kandongman`。最低声明为 Android 5.0。
+适合遥控器操作的 Android 动漫目录与播放器。当前发布 **1.6.8**，包名 `com.qianq.kandongman`。最低声明为 Android 5.0。
 
 [下载 APK 与完整源码](https://github.com/suqianqiu/qianqiu-animation/releases/latest) · [安装指南](INSTALL.md) · [验证记录](VERIFICATION.txt) · [第三方说明](THIRD_PARTY.txt)
+
+## 1.6.8 更新：已知HLS插播过滤修复
+
+修复 `METHOD=NONE` 清单漏过指纹检查、混合分片区间匹配及旧缓存复检；指纹请求增加并发、请求数量和总时间限制。在线播放与手动缓存共用规则。
+
+随机10部×5集完成796分片抽帧：已知独立广告过滤移除605分片/113段，71处剧情拼接解码通过。**32集抽样仍有片内推广文字，本版没有清除这部分；抽样不等于整集无广告认证。** 定向回归和华为实机集成通过，详见 [1.6.8更新及测试记录](docs/VERIFICATION-1.6.8.md) 与 [更新日志](CHANGELOG.md)。
 
 ## 1.6.7 更新：应用内升级
 
@@ -74,7 +80,7 @@
 
 ## 下载、安装与遥控器操作
 
-[1.6.7 APK](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.7/QianqiuAnimation-1.6.7.apk) · [完整源码 ZIP](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.7/QianqiuAnimation-1.6.7-source.zip) · [SHA-256 校验](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.7/SHA256SUMS.txt)
+[1.6.8 APK](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.8/QianqiuAnimation-1.6.8.apk) · [完整源码 ZIP](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.8/QianqiuAnimation-1.6.8-source.zip) · [SHA-256 校验](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.8/SHA256SUMS.txt)
 
 APK包含32位ARM库，支持运行32位应用的ARM设备；不包含x86或ARM64原生库。安装步骤、U盘方法、网络ADB与可复制给电脑AI的安装提示词见[安装指南](INSTALL.md)。需要设备允许安装外部APK；无需电脑服务常驻。
 
