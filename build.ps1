@@ -28,7 +28,7 @@ if(Test-Path -LiteralPath $classesDir){
 New-Item -ItemType Directory -Force -Path build/classes,build/generated,build/dex,build/package-armv7/lib,dist | Out-Null
 Run "$bt/aapt.exe" @('package','-f','--auto-add-overlay','-M','AndroidManifest.xml','-S','res','-S','deps/libvlc/res','-A','assets','-I',$android,'-J','build/generated','--extra-packages','org.videolan','-F','build/unsigned.apk')
 $sources=@(Get-ChildItem src,build/generated -Filter '*.java' -Recurse | ForEach-Object FullName)
-Run javac (@('-encoding','UTF-8','-source','8','-target','8','-bootclasspath',$android,'-classpath','deps/libvlc/classes.jar;deps/jsoup-1.13.1.jar','-d','build/classes')+$sources)
+Run javac (@('-encoding','UTF-8','--release','8','-classpath',"$android;deps/libvlc/classes.jar;deps/jsoup-1.13.1.jar",'-d','build/classes')+$sources)
 Run jar @('cf','build/app-classes.jar','-C','build/classes','.')
 Run "$bt/d8.bat" @('--min-api','21','--lib',$android,'--output','build/dex','deps/libvlc/classes.jar','deps/jsoup-1.13.1.jar','build/app-classes.jar')
 Copy-Item -LiteralPath build/dex/classes.dex -Destination build/package-armv7/classes.dex -Force
@@ -44,11 +44,11 @@ Run "$bt/zipalign.exe" @('-f','4','build/unsigned.apk','build/aligned-armv7.apk'
 if(!(Test-Path anime-local.jks)) {
     Run keytool @('-genkeypair','-keystore','anime-local.jks','-storepass','simplelive-local','-keypass','simplelive-local','-alias','simplelive','-keyalg','RSA','-keysize','2048','-validity','10000','-dname','CN=KanDongman Local Build')
 }
-Run "$bt/apksigner.bat" @('sign','--ks','anime-local.jks','--ks-pass','pass:simplelive-local','--key-pass','pass:simplelive-local','--min-sdk-version','21','--v1-signing-enabled','true','--out','dist/KanDongman-1.6.6.apk','build/aligned-armv7.apk')
-Run "$bt/apksigner.bat" @('verify','--verbose','dist/KanDongman-1.6.6.apk')
-Run "$bt/aapt.exe" @('dump','badging','dist/KanDongman-1.6.6.apk')
+Run "$bt/apksigner.bat" @('sign','--ks','anime-local.jks','--ks-pass','pass:simplelive-local','--key-pass','pass:simplelive-local','--min-sdk-version','21','--v1-signing-enabled','true','--out','dist/KanDongman-1.6.7.apk','build/aligned-armv7.apk')
+Run "$bt/apksigner.bat" @('verify','--verbose','dist/KanDongman-1.6.7.apk')
+Run "$bt/aapt.exe" @('dump','badging','dist/KanDongman-1.6.7.apk')
 if($Install) {
-    if([string]::IsNullOrWhiteSpace($Device)){throw 'Specify your authorized Android device explicitly with -Device.'}
-    Run adb @('-s',$Device,'install','-r','dist/KanDongman-1.6.6.apk')
+    Run adb @('-s',$Device,'install','-r','dist/KanDongman-1.6.7.apk')
+    Run adb @('-s',$Device,'shell','am','start','-n','com.qianq.kandongman/.MainActivity')
 }
-Write-Output 'Built dist/KanDongman-1.6.6.apk'
+Write-Output 'Built dist/KanDongman-1.6.7.apk'

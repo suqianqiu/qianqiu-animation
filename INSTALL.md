@@ -22,9 +22,9 @@
 ```text
 请帮我把千秋动画安装到我自己的 Android 电视。
 项目地址：https://github.com/suqianqiu/qianqiu-animation
-发布版本：1.6.6
-APK 下载：https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.6/QianqiuAnimation-1.6.6.apk
-校验文件：https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.6/SHA256SUMS.txt
+发布版本：1.6.7
+APK 下载：https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.7/QianqiuAnimation-1.6.7.apk
+校验文件：https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.7/SHA256SUMS.txt
 我的电视 ADB 地址：192.168.1.100:5555（请替换成实际地址）。
 请先阅读项目首页的学习用途与免责声明，并检查电脑是否有官方 adb。
 下载 APK 和 SHA256SUMS.txt，核对 APK 的 SHA-256；校验不符则停止安装。
@@ -47,7 +47,7 @@ adb devices -l
 adb -s $tvAddress shell getprop ro.build.version.release
 adb -s $tvAddress shell getprop ro.product.cpu.abilist
 adb -s $tvAddress shell getprop ro.product.cpu.abi
-adb -s $tvAddress install -r './QianqiuAnimation-1.6.6.apk'
+adb -s $tvAddress install -r './QianqiuAnimation-1.6.7.apk'
 adb -s $tvAddress shell am start -n 'com.qianq.kandongman/.MainActivity'
 adb -s $tvAddress shell dumpsys package com.qianq.kandongman
 adb disconnect $tvAddress
@@ -59,7 +59,7 @@ adb disconnect $tvAddress
 
 ## 方式二：U 盘安装（不需要 AI 或 ADB）
 
-1. 在电脑打开 [千秋动画下载页](https://github.com/suqianqiu/qianqiu-animation/releases/latest)，下载 **`QianqiuAnimation-1.6.6.apk`**；普通用户不需要下载源码 ZIP。可同时下载 `SHA256SUMS.txt`，在 PowerShell 中运行 `Get-FileHash './QianqiuAnimation-1.6.6.apk' -Algorithm SHA256`，与校验文件中同名文件的值对比。
+1. 在电脑打开 [千秋动画下载页](https://github.com/suqianqiu/qianqiu-animation/releases/latest)，下载 **`QianqiuAnimation-1.6.7.apk`**；普通用户不需要下载源码 ZIP。可同时下载 `SHA256SUMS.txt`，在 PowerShell 中运行 `Get-FileHash './QianqiuAnimation-1.6.7.apk' -Algorithm SHA256`，与校验文件中同名文件的值对比。
 2. 把 APK 复制到电视能识别的 U 盘。老电视通常更容易识别 FAT32；请先尝试现有 U 盘，不必为了本应用格式化或清除其中的数据。
 3. 将 U 盘插入电视，在电视的文件管理器、媒体中心或厂商提供的本地安装入口中找到该 APK。有些文件管理器默认仅显示照片和视频，需要切换到“全部文件 / 安装包”。
 4. 按电视提示，给负责打开 APK 的文件管理器开启“允许安装未知应用 / 外部来源安装”权限；旧系统可能是在安全设置中统一开启。随后选择 APK 并确认安装。菜单名称因品牌和 Android 版本而异。
@@ -72,3 +72,8 @@ adb disconnect $tvAddress
 - **解析包失败 / ABI 不兼容：**核对下载完整性、最低 Android 5.0 和本项目 CPU 架构要求。千秋动画本版仅提供 32 位 ARM 库；千秋直播提供 32 位及 64 位 ARM 库。
 - **覆盖安装提示签名不一致：**自行构建的 APK 与发布版可能签名不同。不要直接卸载；先确认是否需要保留历史与配置，再自行决定如何处理。
 - **电视禁止安装外部应用：**以上方法依赖系统允许安装，不承诺适用于所有品牌。请使用厂商支持的安装方式，不提供绕过系统限制的操作。
+
+
+## 后续应用内升级
+
+从 1.6.7 开始，每天首次打开后台检查一次；进入 首页右上角「版本更新」 可手动检查、下载及确认安装。详细步骤见 [版本更新说明](docs/UPDATES.md)。

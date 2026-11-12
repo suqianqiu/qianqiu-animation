@@ -40,6 +40,7 @@ public final class MainActivity extends Activity {
     private ArrayAdapter<String> adapter;
     private final ArrayList<String> labels=new ArrayList<String>();
     private SharedPreferences prefs;
+    private UpdatePrompt updatePrompt;
     private int generation;
     private final ArrayList<AnimeCatalog.Entry> catalog=AnimeCatalog.load();
     private char letter='*';
@@ -108,7 +109,7 @@ public final class MainActivity extends Activity {
             return super.dispatchKeyEvent(event);
         }};list.setBackgroundColor(0xFF151727);list.setPadding(dp(24),dp(14),dp(24),dp(14));list.setClipToPadding(false);list.setItemsCanFocus(true);list.setDivider(null);list.setSelector(TvStyle.rows(this));list.setDrawSelectorOnTop(false);list.setSmoothScrollbarEnabled(true);setContentView(list);
         LinearLayout root=new LinearLayout(this);root.setOrientation(1);root.setBackgroundColor(0xFF151727);pageHeader=root;list.addHeaderView(root,null,true);
-        TextView brand=text("千秋动画",30,0xFFE1D5FF);brand.setTypeface(null,Typeface.BOLD);root.addView(brand);
+        TextView brand=text("千秋动画",30,0xFFE1D5FF);brand.setTypeface(null,Typeface.BOLD);LinearLayout brandRow=new LinearLayout(this);brandRow.setGravity(Gravity.CENTER_VERTICAL);brandRow.addView(brand,new LinearLayout.LayoutParams(0,-2,1));button(brandRow,"版本更新",new Runnable(){public void run(){startActivity(new Intent(MainActivity.this,UpdateActivity.class));}});root.addView(brandRow);
         TextView guide=text("全部海报 · 向下持续浏览 · 菜单 / 长按海报置顶",16,0xFFB7B6C9);guide.setPadding(0,dp(5),0,dp(8));root.addView(guide);
         LinearLayout bar=new LinearLayout(this);
         query=new EditText(this){@Override public boolean onKeyPreIme(int key,KeyEvent event){
@@ -432,11 +433,12 @@ public final class MainActivity extends Activity {
     }
     @Override public boolean onKeyDown(int key,KeyEvent event) {
         if(key==KeyEvent.KEYCODE_MENU&&current!=null&&current.posters){View focus=getCurrentFocus();if(focus!=null&&focus.getTag() instanceof Integer){if(event.getRepeatCount()==0)posterActions(current,((Integer)focus.getTag()).intValue());return true;}}
-        if(key==KeyEvent.KEYCODE_MENU){if(event.getRepeatCount()==0){AlertDialog dialog=new AlertDialog.Builder(this).setTitle("千秋动画 1.6.6").setMessage("面向遥控器的动漫搜索与播放器。\n\n热门按豆瓣评分降序，显示具体作品/季和快照日期。\n历史保留最近20部及播放进度。\n\n来源规则：KazumiRules（MIT）。\nHTML解析：jsoup（MIT）。\n播放器：VideoLAN LibVLC 3.6.5（LGPL 2.1）。\n应用源码及许可证随安装包交付。\n\n来源页面和线路可能变化；搜索结果不等于每条播放线路都可用。").setNeutralButton("评分来源",new DialogInterface.OnClickListener(){public void onClick(DialogInterface d,int which){AlertDialog info=new AlertDialog.Builder(MainActivity.this).setTitle("豆瓣评分来源 · "+ratingDate).setMessage(ratingInfo).setPositiveButton("知道了",null).show();TvStyle.button(info.getButton(-1));}}).setPositiveButton("知道了",null).show();TvStyle.button(dialog.getButton(-1));TvStyle.button(dialog.getButton(-3));}return true;}
+        if(key==KeyEvent.KEYCODE_MENU){if(event.getRepeatCount()==0){AlertDialog dialog=new AlertDialog.Builder(this).setTitle("千秋动画 1.6.7").setMessage("面向遥控器的动漫搜索与播放器。\n\n热门按豆瓣评分降序，显示具体作品/季和快照日期。\n历史保留最近20部及播放进度。\n\n来源规则：KazumiRules（MIT）。\nHTML解析：jsoup（MIT）。\n播放器：VideoLAN LibVLC 3.6.5（LGPL 2.1）。\n应用源码及许可证随安装包交付。\n\n来源页面和线路可能变化；搜索结果不等于每条播放线路都可用。").setNeutralButton("评分来源",new DialogInterface.OnClickListener(){public void onClick(DialogInterface d,int which){AlertDialog info=new AlertDialog.Builder(MainActivity.this).setTitle("豆瓣评分来源 · "+ratingDate).setMessage(ratingInfo).setPositiveButton("知道了",null).show();TvStyle.button(info.getButton(-1));}}).setPositiveButton("知道了",null).show();TvStyle.button(dialog.getButton(-1));TvStyle.button(dialog.getButton(-3));}return true;}
         return super.onKeyDown(key,event);
     }
     @Override public void onBackPressed(){if(searchInputRequested){hideSearchKeyboard();return;}generation++;if(!back.isEmpty()){show(back.pop(),false);status.setText("返回上一级 · 菜单查看说明");}else super.onBackPressed();}
-    @Override public void onResume(){super.onResume();searchInputRequested=false;query.post(new Runnable(){public void run(){if(!searchInputRequested)hideSearchKeyboard();}});if(current!=null){if(current.tab==HISTORY){renderHistory(false);return;}int removed=current.prune();if(removed>0){show(current,false);status.setText("已自动移除 "+removed+" 个确认失效的404/410地址，请选其他线路或剧集。");}list.post(new Runnable(){public void run(){updatePosterWindow();}});}}
+    @Override public void onResume(){super.onResume();if(updatePrompt==null)updatePrompt=new UpdatePrompt(this);updatePrompt.resume();searchInputRequested=false;query.post(new Runnable(){public void run(){if(!searchInputRequested)hideSearchKeyboard();}});if(current!=null){if(current.tab==HISTORY){renderHistory(false);return;}int removed=current.prune();if(removed>0){show(current,false);status.setText("已自动移除 "+removed+" 个确认失效的404/410地址，请选其他线路或剧集。");}list.post(new Runnable(){public void run(){updatePosterWindow();}});}}
+    @Override protected void onPause(){if(updatePrompt!=null)updatePrompt.pause();super.onPause();}
     @Override protected void onStop(){hideSearchKeyboard();if(taskProgress!=null){generation++;if(taskWork!=null)taskWork.cancel(true);}dismissTaskDialogs();rememberScreen();if(posterLoader!=null)posterLoader.retain(Collections.<String>emptySet());super.onStop();}
     @Override public void onDestroy(){generation++;worker.shutdownNow();catalogWorker.shutdownNow();if(posterLoader!=null)posterLoader.close();super.onDestroy();}
 }

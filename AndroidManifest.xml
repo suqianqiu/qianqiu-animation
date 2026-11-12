@@ -1,6 +1,7 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.qianq.kandongman" android:versionCode="15" android:versionName="1.6.6">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.qianq.kandongman" android:versionCode="16" android:versionName="1.6.7">
     <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="28" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -13,5 +14,7 @@
         <activity android:name=".PlayerActivity" android:exported="false" android:screenOrientation="landscape" android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity android:name=".DownloadsActivity" android:exported="false" android:screenOrientation="landscape" />
         <service android:name=".DownloadService" android:exported="false" android:foregroundServiceType="dataSync" />
+        <activity android:name=".UpdateActivity" android:exported="false" android:screenOrientation="landscape" />
+        <receiver android:name=".UpdateInstallReceiver" android:exported="false" />
     </application>
 </manifest>

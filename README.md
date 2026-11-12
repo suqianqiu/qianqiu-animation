@@ -6,9 +6,21 @@
 >
 > 第三方网页、播放地址及评分数据可能变化；不保证全部内容可播放、长期可用或兼容所有电视。安装、网络调试和自行配置应由设备所有者了解后操作。本声明不免除任何依法应承担的责任。如发现权利或安全问题，请通过本仓库 Issues 提供具体链接和说明，以便核查处理。
 
-适合遥控器操作的 Android 动漫目录与播放器。当前发布 **1.6.6**，包名 `com.qianq.kandongman`。最低声明为 Android 5.0。
+适合遥控器操作的 Android 动漫目录与播放器。当前发布 **1.6.7**，包名 `com.qianq.kandongman`。最低声明为 Android 5.0。
 
 [下载 APK 与完整源码](https://github.com/suqianqiu/qianqiu-animation/releases/latest) · [安装指南](INSTALL.md) · [验证记录](VERIFICATION.txt) · [第三方说明](THIRD_PARTY.txt)
+
+## 1.6.7 更新：应用内升级
+
+- **每天首次打开自动检查**：按电视本地日期，每天后台检测一次正式版本；失败不反复打扰，也可手动检查。
+- **升级入口**：首页右上角「版本更新」。支持下载进度、暂停和断点续传，校验通过后进入系统确认安装。
+- **保留现有数据**：覆盖安装前核对文件摘要、包名、签名及版本，保留设置和已有数据。
+
+![千秋动画 1.6.7 华为智慧屏升级页面](docs/screenshots/update-1.6.7.png)
+
+完整操作步骤、授权引导和失败处理见 [版本更新产品说明](docs/UPDATES.md)。旧版需要先覆盖安装一次此版，后续即可应用内升级。
+
+两款应用均在 Android 11 模拟器通过 32 项逻辑、7 项页面遥控器、3 项真实 GitHub 检查，并验证系统确认覆盖安装后保留数据；本版已覆盖安装到华为智慧屏。完整说明见 [本版验证记录](docs/VERIFICATION-1.6.7.md)。
 
 ## 1.6.6 更新
 
@@ -62,7 +74,7 @@
 
 ## 下载、安装与遥控器操作
 
-[1.6.6 APK](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.6/QianqiuAnimation-1.6.6.apk) · [完整源码 ZIP](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.6/QianqiuAnimation-1.6.6-source.zip) · [SHA-256 校验](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.6/SHA256SUMS.txt)
+[1.6.7 APK](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.7/QianqiuAnimation-1.6.7.apk) · [完整源码 ZIP](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.7/QianqiuAnimation-1.6.7-source.zip) · [SHA-256 校验](https://github.com/suqianqiu/qianqiu-animation/releases/download/v1.6.7/SHA256SUMS.txt)
 
 APK包含32位ARM库，支持运行32位应用的ARM设备；不包含x86或ARM64原生库。安装步骤、U盘方法、网络ADB与可复制给电脑AI的安装提示词见[安装指南](INSTALL.md)。需要设备允许安装外部APK；无需电脑服务常驻。
 
@@ -99,7 +111,7 @@ pwsh -File tools/fetch-deps.ps1
 pwsh -File build.ps1
 ```
 
-输出 `dist/KanDongman-1.6.6.apk`。依赖从Maven Central获取并核对SHA-256；完整源码ZIP包含原始AAR、库源码和依赖。构建会创建自己的本地签名文件，发布者私钥不随源码提供；不同签名不能覆盖安装发布版。
+输出 `dist/KanDongman-1.6.7.apk`。依赖从Maven Central获取并核对SHA-256；完整源码ZIP包含原始AAR、库源码和依赖。构建会创建自己的本地签名文件，发布者私钥不随源码提供；不同签名不能覆盖安装发布版。
 
 ## 来源与许可
 
