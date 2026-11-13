@@ -1,5 +1,6 @@
-param([switch]$Install, [string]$Device='')
+param([switch]$Install, [string]$Device='', [string]$ManifestPath='AndroidManifest.xml', [string]$OutputApk='')
 $ErrorActionPreference='Stop'
+if([string]::IsNullOrWhiteSpace($OutputApk)){$OutputApk='dist/QianqiuAnimation-1.6.9.apk'}
 Set-Location $PSScriptRoot
 $sdk=Join-Path $env:LOCALAPPDATA 'Android/Sdk'
 $bt=Join-Path $sdk 'build-tools/35.0.0'
@@ -13,7 +14,9 @@ if(!(Test-Path $aar)){throw 'Missing LibVLC AAR. See README for the official Mav
 $expected='6A15A1F7ACD0738A31ACCE0C7E5EB6F5F340B62E6B64D8F83DF547DA56A44B47'
 if((Get-FileHash $aar -Algorithm SHA256).Hash -ne $expected){throw 'LibVLC dependency checksum does not match the reviewed build.'}
 if((Get-FileHash 'deps/jsoup-1.13.1.jar' -Algorithm SHA256).Hash -ne 'E2B99C0D2FA39F69F27EFB1C0016390713FEB2F2E02D8EA7F1C36B780271598A'){throw 'jsoup checksum mismatch'}
-if((Get-FileHash 'assets/trusted-roots.pem' -Algorithm SHA256).Hash -ne '0E99DB0DD2EAEBC57711CF214980196E1F1E2A569BFA4EA7BAE26A5FDC439DBF'){throw 'CA root bundle checksum mismatch'}
+[byte[]]$rootBytes=[Text.Encoding]::UTF8.GetBytes([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'assets/trusted-roots.pem')).Replace("`r`n","`n"))
+$rootHash=[BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash($rootBytes)).Replace('-','')
+if($rootHash -ne 'B9081B6E6C13B3DE3388E58CD027F88F7A8320C89A39498746D31E2CE6850536'){throw 'CA root bundle checksum mismatch'}
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 if(!(Test-Path 'deps/libvlc/classes.jar')) {
     [IO.Compression.ZipFile]::ExtractToDirectory((Resolve-Path $aar).Path,(Join-Path $PSScriptRoot 'deps/libvlc'))
@@ -26,7 +29,7 @@ if(Test-Path -LiteralPath $classesDir){
     Remove-Item -LiteralPath $classesDir -Recurse -Force
 }
 New-Item -ItemType Directory -Force -Path build/classes,build/generated,build/dex,build/package-armv7/lib,dist | Out-Null
-Run "$bt/aapt.exe" @('package','-f','--auto-add-overlay','-M','AndroidManifest.xml','-S','res','-S','deps/libvlc/res','-A','assets','-I',$android,'-J','build/generated','--extra-packages','org.videolan','-F','build/unsigned.apk')
+Run "$bt/aapt.exe" @('package','-f','--auto-add-overlay','-M',$ManifestPath,'-S','res','-S','deps/libvlc/res','-A','assets','-I',$android,'-J','build/generated','--extra-packages','org.videolan','-F','build/unsigned.apk')
 $sources=@(Get-ChildItem src,build/generated -Filter '*.java' -Recurse | ForEach-Object FullName)
 Run javac (@('-encoding','UTF-8','--release','8','-classpath',"$android;deps/libvlc/classes.jar;deps/jsoup-1.13.1.jar",'-d','build/classes')+$sources)
 Run jar @('cf','build/app-classes.jar','-C','build/classes','.')
@@ -44,11 +47,11 @@ Run "$bt/zipalign.exe" @('-f','4','build/unsigned.apk','build/aligned-armv7.apk'
 if(!(Test-Path anime-local.jks)) {
     Run keytool @('-genkeypair','-keystore','anime-local.jks','-storepass','simplelive-local','-keypass','simplelive-local','-alias','simplelive','-keyalg','RSA','-keysize','2048','-validity','10000','-dname','CN=KanDongman Local Build')
 }
-Run "$bt/apksigner.bat" @('sign','--ks','anime-local.jks','--ks-pass','pass:simplelive-local','--key-pass','pass:simplelive-local','--min-sdk-version','21','--v1-signing-enabled','true','--out','dist/KanDongman-1.6.8.apk','build/aligned-armv7.apk')
-Run "$bt/apksigner.bat" @('verify','--verbose','dist/KanDongman-1.6.8.apk')
-Run "$bt/aapt.exe" @('dump','badging','dist/KanDongman-1.6.8.apk')
+Run "$bt/apksigner.bat" @('sign','--ks','anime-local.jks','--ks-pass','pass:simplelive-local','--key-pass','pass:simplelive-local','--min-sdk-version','21','--v1-signing-enabled','true','--out',$OutputApk,'build/aligned-armv7.apk')
+Run "$bt/apksigner.bat" @('verify','--verbose',$OutputApk)
+Run "$bt/aapt.exe" @('dump','badging',$OutputApk)
 if($Install) {
-    Run adb @('-s',$Device,'install','-r','dist/KanDongman-1.6.8.apk')
+    Run adb @('-s',$Device,'install','-r',$OutputApk)
     Run adb @('-s',$Device,'shell','am','start','-n','com.qianq.kandongman/.MainActivity')
 }
-Write-Output 'Built dist/KanDongman-1.6.8.apk'
+Write-Output 'Built dist/QianqiuAnimation-1.6.9.apk'
