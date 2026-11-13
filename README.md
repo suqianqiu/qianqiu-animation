@@ -6,15 +6,23 @@
 >
 > 第三方网页、播放地址及评分数据可能变化；不保证全部内容可播放、长期可用或兼容所有电视。安装、网络调试和自行配置应由设备所有者了解后操作。本声明不免除任何依法应承担的责任。如发现权利或安全问题，请通过本仓库 Issues 提供具体链接和说明，以便核查处理。
 
-适合遥控器操作的 Android 动漫目录与播放器。当前发布 **1.6.9**，包名 `com.qianq.kandongman`。最低声明为 Android 5.0。
+适合遥控器操作的 Android 动漫目录与播放器。当前发布 **1.6.10**，包名 `com.qianq.kandongman`。最低声明为 Android 5.0。
 
 [下载 APK 与完整源码](https://github.com/suqianqiu/qianqiu-animation/releases/latest) · [安装指南](INSTALL.md) · [验证记录](VERIFICATION.txt) · [第三方说明](THIRD_PARTY.txt)
+
+## 1.6.10 更新：腾讯云优先升级与折纸Logo
+
+<img src="assets/branding/origami-logo.png" width="192" alt="迪波威蓝色荧光眼Logo">
+
+[腾讯云下载最新版](https://www.dajinsuan.com/tvapp/qianqiu-animation/v1.6.10/QianqiuAnimation-1.6.10.apk) · [GitHub备用](https://github.com/suqianqiu/qianqiu-animation/releases/tag/v1.6.10) · [升级机制](docs/UPDATES.md)
+
+检测和下载优先走腾讯云香港COS，GitHub备用；保留断点续传和安装包身份校验。新Logo同时用于桌面图标和电视横幅。旧版需先覆盖安装一次，才能取得新的升级入口。
 
 ## 1.6.9 更新：腾讯云优先升级与折纸Logo
 
 <img src="assets/branding/origami-logo.png" width="192" alt="折纸科技风Logo">
 
-[腾讯云下载最新版](https://www.dajinsuan.com/tvapp/qianqiu-animation/v1.6.9/QianqiuAnimation-1.6.9.apk) · [GitHub备用](https://github.com/suqianqiu/qianqiu-animation/releases/tag/v1.6.9) · [升级机制](docs/UPDATES.md)
+[腾讯云下载最新版](https://www.dajinsuan.com/tvapp/qianqiu-animation/v1.6.9/QianqiuAnimation-1.6.9.apk) · [GitHub备用](https://github.com/suqianqiu/qianqiu-animation/releases/tag/v1.6.10) · [升级机制](docs/UPDATES.md)
 
 检测和下载优先走腾讯云香港COS，GitHub备用；保留断点续传和安装包身份校验。新Logo同时用于桌面图标和电视横幅。旧版需先覆盖安装一次，才能取得新的升级入口。
 
