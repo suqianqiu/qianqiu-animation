@@ -6,9 +6,17 @@
 >
 > 第三方网页、播放地址及评分数据可能变化；不保证全部内容可播放、长期可用或兼容所有电视。安装、网络调试和自行配置应由设备所有者了解后操作。本声明不免除任何依法应承担的责任。如发现权利或安全问题，请通过本仓库 Issues 提供具体链接和说明，以便核查处理。
 
-适合遥控器操作的 Android 动漫目录与播放器。当前发布 **1.6.10**，包名 `com.qianq.kandongman`。最低声明为 Android 5.0。
+适合遥控器操作的 Android 动漫目录与播放器。当前发布 **1.6.11**，包名 `com.qianq.kandongman`。最低声明为 Android 5.0。
 
 [下载 APK 与完整源码](https://github.com/suqianqiu/qianqiu-animation/releases/latest) · [安装指南](INSTALL.md) · [验证记录](VERIFICATION.txt) · [第三方说明](THIRD_PARTY.txt)
+
+## 1.6.11 更新：图标圆角外透明
+
+<img src="assets/branding/origami-logo.png" width="192" alt="圆角外透明Logo">
+
+修复圆角外的黑底或白底，PNG保留真实透明通道；图案与荧光效果继续保留。电视桌面及横幅引用同一图标资源。
+
+[腾讯云下载](https://www.dajinsuan.com/tvapp/qianqiu-animation/v1.6.11/QianqiuAnimation-1.6.11.apk) · [GitHub备用](https://github.com/suqianqiu/qianqiu-animation/releases/tag/v1.6.11)
 
 ## 1.6.10 更新：腾讯云优先升级与折纸Logo
 

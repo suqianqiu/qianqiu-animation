@@ -1,6 +1,6 @@
 param([switch]$Install, [string]$Device='', [string]$ManifestPath='AndroidManifest.xml', [string]$OutputApk='')
 $ErrorActionPreference='Stop'
-if([string]::IsNullOrWhiteSpace($OutputApk)){$OutputApk='dist/QianqiuAnimation-1.6.10.apk'}
+if([string]::IsNullOrWhiteSpace($OutputApk)){$OutputApk='dist/QianqiuAnimation-1.6.11.apk'}
 Set-Location $PSScriptRoot
 $sdk=Join-Path $env:LOCALAPPDATA 'Android/Sdk'
 $bt=Join-Path $sdk 'build-tools/35.0.0'
@@ -54,4 +54,4 @@ if($Install) {
     Run adb @('-s',$Device,'install','-r',$OutputApk)
     Run adb @('-s',$Device,'shell','am','start','-n','com.qianq.kandongman/.MainActivity')
 }
-Write-Output 'Built dist/QianqiuAnimation-1.6.10.apk'
+Write-Output 'Built dist/QianqiuAnimation-1.6.11.apk'
